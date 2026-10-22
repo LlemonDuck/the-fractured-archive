@@ -3,6 +3,8 @@ package com.duckblade.osrs.tfa.module;
 import com.duckblade.osrs.tfa.TfaConfig;
 import com.duckblade.osrs.tfa.features.FadeDisabler;
 import com.duckblade.osrs.tfa.features.LobbyBoardHighlighter;
+import com.duckblade.osrs.tfa.features.chests.RewardChestOverlay;
+import com.duckblade.osrs.tfa.features.chests.UniqueChestLights;
 import com.duckblade.osrs.tfa.features.hporbs.HealthBarsOverlay;
 import com.duckblade.osrs.tfa.features.updatenotifier.UpdateNotifier;
 import com.duckblade.osrs.tfa.util.RaidCompletionTracker;
@@ -33,6 +35,8 @@ public class TfaModule extends AbstractModule
 		LobbyBoardHighlighter lobbyBoardHighlighter,
 		RaidCompletionTracker raidCompletionTracker,
 		RaidStateTracker raidStateTracker,
+		RewardChestOverlay rewardChestOverlay,
+		UniqueChestLights uniqueChestLights,
 		UpdateNotifier updateNotifier
 	)
 	{
@@ -42,6 +46,8 @@ public class TfaModule extends AbstractModule
 			lobbyBoardHighlighter,
 			raidCompletionTracker,
 			raidStateTracker,
+			rewardChestOverlay,
+			uniqueChestLights,
 			updateNotifier
 		);
 	}

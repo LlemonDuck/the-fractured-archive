@@ -14,3 +14,5 @@ Utilities and information for raiding The Fractured Archive.
 <summary>Miscellaneous</summary>
 
 </details>
+
+![Reward chest highlight](screenshots/reward-chest.jpg)

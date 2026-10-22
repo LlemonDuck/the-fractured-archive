@@ -1,5 +1,6 @@
 package com.duckblade.osrs.tfa;
 
+import java.awt.Color;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
@@ -16,6 +17,16 @@ public class ConfigMigrationService
 
 	void migrate()
 	{
+		Color previousLightColor = configManager.getConfiguration(TfaConfig.CONFIG_GROUP, "rewardChestUniqueLightColor", Color.class);
+		if (previousLightColor != null)
+		{
+			// Keep the existing chest color when both pickers had saved values.
+			if (configManager.getConfiguration(TfaConfig.CONFIG_GROUP, "rewardChestUniqueColor", Color.class) == null)
+			{
+				configManager.setConfiguration(TfaConfig.CONFIG_GROUP, "rewardChestUniqueColor", previousLightColor);
+			}
+			configManager.unsetConfiguration(TfaConfig.CONFIG_GROUP, "rewardChestUniqueLightColor");
+		}
 	}
 
 	private <Source, Dest> void migrate(String oldKey, String newKey, Class<Source> sourceType, Function<Source, Dest> migration)
