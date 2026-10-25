@@ -71,6 +71,18 @@ public interface TfaConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+		keyName = "hideEarlyChestSparkles",
+		name = "Hide Early Chest Sparkles",
+		description = "Hide small-chest sparkles until the reward braziers finish lighting.",
+		position = 4,
+		section = SECTION_MISCELLANEOUS
+	)
+	default boolean hideEarlyChestSparkles()
+	{
+		return false;
+	}
+
 	// hidden
 
 	@ConfigItem(
