@@ -1,6 +1,7 @@
 package com.duckblade.osrs.tfa.module;
 
 import com.duckblade.osrs.tfa.TfaConfig;
+import com.duckblade.osrs.tfa.features.ChestSparkleHider;
 import com.duckblade.osrs.tfa.features.FadeDisabler;
 import com.duckblade.osrs.tfa.features.LobbyBoardHighlighter;
 import com.duckblade.osrs.tfa.features.hporbs.HealthBarsOverlay;
@@ -28,6 +29,7 @@ public class TfaModule extends AbstractModule
 
 	@Provides
 	Set<PluginLifecycleComponent> lifecycleComponents(
+		ChestSparkleHider chestSparkleHider,
 		FadeDisabler fadeDisabler,
 		HealthBarsOverlay healthBarsOverlay,
 		LobbyBoardHighlighter lobbyBoardHighlighter,
@@ -37,6 +39,7 @@ public class TfaModule extends AbstractModule
 	)
 	{
 		return ImmutableSet.of(
+			chestSparkleHider,
 			fadeDisabler,
 			healthBarsOverlay,
 			lobbyBoardHighlighter,

@@ -13,4 +13,6 @@ Utilities and information for raiding The Fractured Archive.
 <details>
 <summary>Miscellaneous</summary>
 
+- **Hide Early Chest Sparkles:** Hide small-chest sparkles until the reward braziers finish lighting, preserving the reward reveal. Disabled by default.
+
 </details>
