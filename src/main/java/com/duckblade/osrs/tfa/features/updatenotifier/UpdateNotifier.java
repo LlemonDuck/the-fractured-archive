@@ -20,7 +20,7 @@ public class UpdateNotifier
 	implements PluginLifecycleComponent
 {
 
-	public static final int TARGET_VERSION = 1;
+	public static final int TARGET_VERSION = 2;
 	private static final BufferedImage PANEL_ICON = ImageUtil.loadImageResource(UpdateNotifier.class, "icon.png");
 
 	private final ClientToolbar clientToolbar;
@@ -74,6 +74,10 @@ public class UpdateNotifier
 				updates.add("<strong>(Miscellaneous -> Lobby Board Highlight) Highlights friends' and ignores' names on the party lobby board.");
 				updates.add("<strong>(Miscellaneous -> HP Orbs) Hide HP Orbs, or replace them with health bars.");
 				updates.add("<strong>(Miscellaneous -> Hide Fade Transition) Hides the screen fade-to-black between rooms.");
+
+			case 1:
+				updates.add("<strong>(Loot -> Bank-all Single Click) Left-click only for Bank-all on the loot interface.");
+				updates.add("<strong>(Loot -> Prevent Early Sparkle) Hides the loot chest sparkling until you would have triggered the purple chest animation.");
 		}
 
 		return updates;
