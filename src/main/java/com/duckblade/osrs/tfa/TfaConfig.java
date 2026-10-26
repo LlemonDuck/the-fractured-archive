@@ -23,6 +23,16 @@ public interface TfaConfig extends Config
 	)
 	String SECTION_MISCELLANEOUS = "sectionMiscellaneous";
 
+	@ConfigSection(
+		name = "Loot",
+		description = "Options for the loot room.",
+		position = 1,
+		closedByDefault = true
+	)
+	String SECTION_LOOT = "sectionLoot";
+
+	// Miscellaneous
+
 	@ConfigItem(
 		keyName = "showUpdateMessages",
 		name = "Show Updates",
@@ -69,6 +79,20 @@ public interface TfaConfig extends Config
 	default boolean hideFadeTransition()
 	{
 		return false;
+	}
+
+	// Loot
+
+	@ConfigItem(
+		keyName = "leftClickBankAll",
+		name = "Bank-all Single Click",
+		description = "Allows you to Bank-all loot without requiring a second click on the minimenu.",
+		section = SECTION_LOOT,
+		position = 0
+	)
+	default boolean leftClickBankAll()
+	{
+		return true;
 	}
 
 	// hidden
