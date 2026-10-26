@@ -95,6 +95,18 @@ public interface TfaConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+		keyName = "lootNoEarlySparkle",
+		name = "Prevent Early Sparkle",
+		description = "Prevents the loot chests from sparkling before crossing the purple reveal threshold.",
+		position = 1,
+		section = SECTION_LOOT
+	)
+	default boolean lootNoEarlySparkle()
+	{
+		return false;
+	}
+
 	// hidden
 
 	@ConfigItem(

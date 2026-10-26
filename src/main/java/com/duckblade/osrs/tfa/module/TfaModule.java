@@ -4,7 +4,6 @@ import com.duckblade.osrs.tfa.TfaConfig;
 import com.duckblade.osrs.tfa.features.FadeDisabler;
 import com.duckblade.osrs.tfa.features.LobbyBoardHighlighter;
 import com.duckblade.osrs.tfa.features.hporbs.HealthBarsOverlay;
-import com.duckblade.osrs.tfa.features.loot.LootChestRecolour;
 import com.duckblade.osrs.tfa.features.loot.LootLeftClickBankAll;
 import com.duckblade.osrs.tfa.features.loot.LootNoEarlySparkle;
 import com.duckblade.osrs.tfa.features.updatenotifier.UpdateNotifier;
@@ -35,6 +34,7 @@ public class TfaModule extends AbstractModule
 		HealthBarsOverlay healthBarsOverlay,
 		LobbyBoardHighlighter lobbyBoardHighlighter,
 		LootLeftClickBankAll lootLeftClickBankAll,
+		LootNoEarlySparkle lootNoEarlySparkle,
 		RaidCompletionTracker raidCompletionTracker,
 		RaidStateTracker raidStateTracker,
 		UpdateNotifier updateNotifier
@@ -45,6 +45,7 @@ public class TfaModule extends AbstractModule
 			healthBarsOverlay,
 			lobbyBoardHighlighter,
 			lootLeftClickBankAll,
+			lootNoEarlySparkle,
 			raidCompletionTracker,
 			raidStateTracker,
 			updateNotifier

@@ -12,5 +12,5 @@
 		<appender-ref ref="STDOUT" />
 	</root>
 
-	<logger name="com.duckblade.osrs.tfa" level="debug" />
+	<logger name="com.duckblade.osrs.tfa" level="trace" />
 </configuration>
