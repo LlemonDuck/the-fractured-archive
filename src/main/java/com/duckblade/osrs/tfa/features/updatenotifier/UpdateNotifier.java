@@ -20,7 +20,7 @@ public class UpdateNotifier
 	implements PluginLifecycleComponent
 {
 
-	public static final int TARGET_VERSION = 2;
+	public static final int TARGET_VERSION = 3;
 	private static final BufferedImage PANEL_ICON = ImageUtil.loadImageResource(UpdateNotifier.class, "icon.png");
 
 	private final ClientToolbar clientToolbar;
@@ -78,6 +78,10 @@ public class UpdateNotifier
 			case 1:
 				updates.add("<strong>(Loot -> Bank-all Single Click) Left-click only for Bank-all on the loot interface.");
 				updates.add("<strong>(Loot -> Prevent Early Sparkle) Hides the loot chest sparkling until you would have triggered the purple chest animation.");
+
+			case 2:
+				updates.add("<strong>(Points Tracker) Added a points tracker showing team and personal purple rates. Unlike the ToA points tracker, this one only updates at the end of rooms, and does not require the party plugin.");
+				updates.add("<strong>(Removed Loot -> Prevent Early Sparkle) Jagex has implemented this themselves.");
 		}
 
 		return updates;

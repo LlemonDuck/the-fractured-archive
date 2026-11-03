@@ -55,7 +55,7 @@ public class PointsOverlay
 	{
 		panelComponent.getChildren().add(
 			TitleComponent.builder()
-				.text("ToA Points")
+				.text("TFA Points")
 				.build()
 		);
 
