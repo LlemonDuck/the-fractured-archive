@@ -104,6 +104,18 @@ public interface TfaConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+		keyName = "lootLobbyReminder",
+		name = "Lobby Reminder",
+		description = "Reminds you to claim your loot when in the raid lobby. You will not be able to start the raid unless you claim your loot.",
+		section = SECTION_LOOT,
+		position = 1
+	)
+	default boolean lootLobbyReminder()
+	{
+		return true;
+	}
+
 	// points tracker
 
 	@ConfigItem(

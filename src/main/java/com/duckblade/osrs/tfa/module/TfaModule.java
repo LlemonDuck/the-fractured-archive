@@ -4,6 +4,7 @@ import com.duckblade.osrs.tfa.TfaConfig;
 import com.duckblade.osrs.tfa.features.FadeDisabler;
 import com.duckblade.osrs.tfa.features.LobbyBoardHighlighter;
 import com.duckblade.osrs.tfa.features.hporbs.HealthBarsOverlay;
+import com.duckblade.osrs.tfa.features.lobby.ClaimYourLoot;
 import com.duckblade.osrs.tfa.features.loot.LootLeftClickBankAll;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsOverlay;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsTracker;
@@ -31,6 +32,7 @@ public class TfaModule extends AbstractModule
 
 	@Provides
 	Set<PluginLifecycleComponent> lifecycleComponents(
+		ClaimYourLoot claimYourLoot,
 		FadeDisabler fadeDisabler,
 		HealthBarsOverlay healthBarsOverlay,
 		LobbyBoardHighlighter lobbyBoardHighlighter,
@@ -43,6 +45,7 @@ public class TfaModule extends AbstractModule
 	)
 	{
 		return ImmutableSet.of(
+			claimYourLoot,
 			fadeDisabler,
 			healthBarsOverlay,
 			lobbyBoardHighlighter,
