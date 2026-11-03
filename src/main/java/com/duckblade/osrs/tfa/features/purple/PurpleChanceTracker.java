@@ -14,6 +14,9 @@ import net.runelite.api.GameState;
 import net.runelite.api.Hitsplat;
 import net.runelite.api.NPC;
 import net.runelite.api.events.ActorDeath;
+import net.runelite.api.events.OverheadTextChanged;
+import net.runelite.api.gameval.NpcID;
+import net.runelite.client.util.Text;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.HitsplatApplied;
 import net.runelite.client.eventbus.Subscribe;
@@ -26,6 +29,7 @@ public class PurpleChanceTracker implements PluginLifecycleComponent
 	private final RaidStateTracker raidStateTracker;
 	private final PurpleChanceModel model = new PurpleChanceModel();
 	private boolean partial = true;
+	private int ocellusPhase;
 
 	@Inject
 	public PurpleChanceTracker(Client client, RaidStateTracker raidStateTracker)
@@ -48,6 +52,7 @@ public class PurpleChanceTracker implements PluginLifecycleComponent
 	public void shutDown()
 	{
 		model.reset();
+		ocellusPhase = 0;
 		partial = true;
 	}
 
@@ -58,6 +63,7 @@ public class PurpleChanceTracker implements PluginLifecycleComponent
 		if (!state.isInRaid())
 		{
 			model.reset();
+			ocellusPhase = 0;
 			partial = true;
 			return;
 		}
@@ -74,7 +80,19 @@ public class PurpleChanceTracker implements PluginLifecycleComponent
 		if (event.getGameState() == GameState.LOGIN_SCREEN || event.getGameState() == GameState.HOPPING)
 		{
 			model.reset();
+			ocellusPhase = 0;
 			partial = true;
+		}
+	}
+
+	@Subscribe
+	public void onOverheadTextChanged(OverheadTextChanged event)
+	{
+		if (event.getActor() instanceof NPC && ((NPC) event.getActor()).getId() == NpcID.TFA_OCELLUS_P3
+			&& "End...".equalsIgnoreCase(Text.removeTags(event.getActor().getOverheadText() == null
+				? "" : event.getActor().getOverheadText()).trim()))
+		{
+			ocellusPhase = 4;
 		}
 	}
 
@@ -110,7 +128,29 @@ public class PurpleChanceTracker implements PluginLifecycleComponent
 		if (attackable && (hit.isMine() || hit.isOthers()))
 		{
 			model.setPlayers(state.getPlayerCount());
-			model.addDamage(state.getCurrentRoom(), hit.getAmount(), hit.isMine());
+			if (state.getCurrentRoom() == RaidRoom.OCELLUS)
+			{
+				switch (npc.getId())
+				{
+					case NpcID.TFA_OCELLUS_P1:
+						ocellusPhase = 1;
+						break;
+					case NpcID.TFA_OCELLUS_P2:
+					case NpcID.TFA_OCELLUS_P2_SWORD_HITBOX:
+						ocellusPhase = 2;
+						break;
+					case NpcID.TFA_OCELLUS_P3:
+						ocellusPhase = Math.max(3, ocellusPhase);
+						break;
+				}
+				model.addOcellusDamage(ocellusPhase, hit.getAmount(), hit.isMine());
+			}
+			else
+			{
+				model.addDamage(state.getCurrentRoom(), hit.getAmount(), hit.isMine());
+			}
 		}
 	}
 }
+
+

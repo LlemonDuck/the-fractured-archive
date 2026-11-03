@@ -21,10 +21,15 @@ class PurpleChanceModelTest
 		PurpleChanceModel model = new PurpleChanceModel();
 		model.setPlayers(2);
 		for (RaidRoom room : new RaidRoom[]{RaidRoom.ARCHIVE_GUARDIAN, RaidRoom.EZEKIEL,
-			RaidRoom.MOIA, RaidRoom.XARTH, RaidRoom.OCELLUS})
+			RaidRoom.MOIA, RaidRoom.XARTH})
 		{
 			model.addDamage(room, 60, true);
 			model.addDamage(room, 40, false);
+		}
+		for (int phase = 1; phase <= 4; phase++)
+		{
+			model.addOcellusDamage(phase, 60, true);
+			model.addOcellusDamage(phase, 40, false);
 		}
 		assertEquals(0.6 / 14, model.projectedChance(), 1e-12);
 		model.addDeath();
@@ -55,4 +60,31 @@ class PurpleChanceModelTest
 		assertEquals(0, model.getDeaths());
 		assertEquals(0, model.getPlayers());
 	}
-}
+	@Test
+	void assumedPhaseWeightsTotalThreeHundred()
+	{
+		double total = 0;
+		for (int phase = 1; phase <= 4; phase++)
+		{
+			total += PurpleChanceModel.ocellusWeight(phase);
+		}
+		assertEquals(300, total, 1e-10);
+		assertEquals(PurpleChanceModel.ocellusWeight(1), PurpleChanceModel.ocellusWeight(4));
+		assertEquals(PurpleChanceModel.ocellusWeight(1) / 2, PurpleChanceModel.ocellusWeight(2));
+		assertEquals(PurpleChanceModel.ocellusWeight(2) * 2, PurpleChanceModel.ocellusWeight(3));
+	}
+
+	@Test
+	void phaseNormalizationIgnoresDifferentRawDamageTotals()
+	{
+		PurpleChanceModel model = new PurpleChanceModel();
+		model.setPlayers(2);
+		model.addOcellusDamage(1, 1000, true);
+		model.addOcellusDamage(2, 2000, false);
+		model.addOcellusDamage(3, 1, true);
+		model.addOcellusDamage(4, 1, false);
+		assertEquals((200 + 1200.0 / 7) / 700 / 14, model.projectedChance(), 1e-12);
+		model.reset();
+		assertEquals(false, model.hasDamage());
+	}}
+
