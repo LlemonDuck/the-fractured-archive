@@ -86,4 +86,18 @@ class PurpleChanceModelTest
 		assertEquals((200 + 187.5) / 700 / 14, model.projectedChance(), 1e-12);
 		model.reset();
 		assertEquals(false, model.hasDamage());
+	}	@Test
+	void clarifiedContributionPoolMatchesPersonalProbability()
+	{
+		assertEquals(700, PurpleChanceModel.scaledContributionPool(2), 1e-12);
+		assertEquals(728, PurpleChanceModel.scaledContributionPool(3), 1e-12);
+		assertEquals(784, PurpleChanceModel.scaledContributionPool(5), 1e-12);
+		assertEquals(868, PurpleChanceModel.scaledContributionPool(8), 1e-12);
+		for (int players = 2; players <= 8; players++)
+		{
+			PurpleChanceModel model = new PurpleChanceModel();
+			model.setPlayers(players);
+			double scaledPersonalPoints = PurpleChanceModel.scaledContributionPool(players) / players;
+			assertEquals(scaledPersonalPoints / 9800, model.projectedChance(), 1e-12);
+		}
 	}}

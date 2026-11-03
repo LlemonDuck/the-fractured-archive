@@ -87,9 +87,16 @@ public class PurpleChanceModel
 		return !damage.isEmpty() || java.util.Arrays.stream(ocellusDamage).anyMatch(p -> p[0] > 0);
 	}
 
+	public static double scaledContributionPool(int players)
+	{
+		// Mod Goblin clarification: the 4% increments add within the multiplier.
+		// The normalized 700-point pool becomes 868 points for eight players.
+		return 700 * (1.0 + 0.04 * (Math.max(2, Math.min(8, players)) - 2));
+	}
+
 	public static double teamChance(int players)
 	{
-		return (1.0 + 0.04 * (Math.max(2, Math.min(8, players)) - 2)) / 14.0;
+		return scaledContributionPool(players) / (700 * 14.0);
 	}
 
 	public double projectedChance()
