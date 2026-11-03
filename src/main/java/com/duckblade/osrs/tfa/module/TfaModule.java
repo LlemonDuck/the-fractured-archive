@@ -5,6 +5,7 @@ import com.duckblade.osrs.tfa.features.FadeDisabler;
 import com.duckblade.osrs.tfa.features.LobbyBoardHighlighter;
 import com.duckblade.osrs.tfa.features.hporbs.HealthBarsOverlay;
 import com.duckblade.osrs.tfa.features.lobby.ClaimYourLoot;
+import com.duckblade.osrs.tfa.features.lobby.SpellbookWarning;
 import com.duckblade.osrs.tfa.features.loot.LootLeftClickBankAll;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsOverlay;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsTracker;
@@ -41,6 +42,7 @@ public class TfaModule extends AbstractModule
 		PointsTracker pointsTracker,
 		RaidCompletionTracker raidCompletionTracker,
 		RaidStateTracker raidStateTracker,
+		SpellbookWarning spellbookWarning,
 		UpdateNotifier updateNotifier
 	)
 	{
@@ -54,6 +56,7 @@ public class TfaModule extends AbstractModule
 			pointsTracker,
 			raidCompletionTracker,
 			raidStateTracker,
+			spellbookWarning,
 			updateNotifier
 		);
 	}

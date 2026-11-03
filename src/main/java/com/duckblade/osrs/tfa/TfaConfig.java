@@ -25,9 +25,17 @@ public interface TfaConfig extends Config
 	String SECTION_MISCELLANEOUS = "sectionMiscellaneous";
 
 	@ConfigSection(
+		name = "Lobby",
+		description = "Options for the raid lobby.",
+		position = 1,
+		closedByDefault = true
+	)
+	String SECTION_LOBBY = "sectionLobby";
+
+	@ConfigSection(
 		name = "Loot",
 		description = "Options for the loot room.",
-		position = 1,
+		position = 2,
 		closedByDefault = true
 	)
 	String SECTION_LOOT = "sectionLoot";
@@ -35,7 +43,7 @@ public interface TfaConfig extends Config
 	@ConfigSection(
 		name = "Points Tracker",
 		description = "Options for the points tracker.",
-		position = 1,
+		position = 3,
 		closedByDefault = true
 	)
 	String SECTION_POINTS_TRACKER = "pointsTracker";
@@ -50,18 +58,6 @@ public interface TfaConfig extends Config
 		section = SECTION_MISCELLANEOUS
 	)
 	default boolean showUpdateMessages()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		keyName = "lobbyBoardFriendHighlighter",
-		name = "Lobby Board Highlight",
-		description = "Highlight friends' and ignores' names on the lobby party finder board.",
-		section = SECTION_MISCELLANEOUS,
-		position = 1
-	)
-	default boolean lobbyBoardFriendHighlighter()
 	{
 		return true;
 	}
@@ -90,6 +86,44 @@ public interface TfaConfig extends Config
 		return false;
 	}
 
+	// Lobby
+
+	@ConfigItem(
+		keyName = "lobbyBoardFriendHighlighter",
+		name = "Lobby Board Highlight",
+		description = "Highlight friends' and ignores' names on the lobby party finder board.",
+		section = SECTION_LOBBY,
+		position = 0
+	)
+	default boolean lobbyBoardFriendHighlighter()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "lobbyLootReminder",
+		name = "Loot Reminder",
+		description = "Reminds you to claim your loot when in the raid lobby. You will not be able to start the raid unless you claim your loot.",
+		section = SECTION_LOBBY,
+		position = 1
+	)
+	default boolean lobbyLootReminder()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "lobbySpellbookWarning",
+		name = "Spellbook Warning",
+		description = "Shows your current spellbook on the raid entrance.",
+		section = SECTION_LOBBY,
+		position = 2
+	)
+	default boolean lobbySpellbookWarning()
+	{
+		return false;
+	}
+
 	// Loot
 
 	@ConfigItem(
@@ -100,18 +134,6 @@ public interface TfaConfig extends Config
 		position = 0
 	)
 	default boolean leftClickBankAll()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		keyName = "lootLobbyReminder",
-		name = "Lobby Reminder",
-		description = "Reminds you to claim your loot when in the raid lobby. You will not be able to start the raid unless you claim your loot.",
-		section = SECTION_LOOT,
-		position = 1
-	)
-	default boolean lootLobbyReminder()
 	{
 		return true;
 	}

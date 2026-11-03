@@ -50,7 +50,7 @@ public class ClaimYourLoot
 	@Override
 	public boolean isEnabled(TfaConfig config, RaidState raidState)
 	{
-		return config.lootLobbyReminder() && raidState.isInLobby();
+		return config.lobbyLootReminder() && raidState.isInLobby();
 	}
 
 	@Override
