@@ -71,7 +71,7 @@ class PurpleChanceModelTest
 		assertEquals(300, total, 1e-10);
 		assertEquals(PurpleChanceModel.ocellusWeight(1), PurpleChanceModel.ocellusWeight(4));
 		assertEquals(PurpleChanceModel.ocellusWeight(1) / 2, PurpleChanceModel.ocellusWeight(2));
-		assertEquals(PurpleChanceModel.ocellusWeight(2) * 2, PurpleChanceModel.ocellusWeight(3));
+		assertEquals(PurpleChanceModel.ocellusWeight(2) * 3, PurpleChanceModel.ocellusWeight(3));
 	}
 
 	@Test
@@ -83,8 +83,7 @@ class PurpleChanceModelTest
 		model.addOcellusDamage(2, 2000, false);
 		model.addOcellusDamage(3, 1, true);
 		model.addOcellusDamage(4, 1, false);
-		assertEquals((200 + 1200.0 / 7) / 700 / 14, model.projectedChance(), 1e-12);
+		assertEquals((200 + 187.5) / 700 / 14, model.projectedChance(), 1e-12);
 		model.reset();
 		assertEquals(false, model.hasDamage());
 	}}
-

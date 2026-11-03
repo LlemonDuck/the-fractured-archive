@@ -63,8 +63,8 @@ public class PurpleChanceModel
 		{
 			throw new IllegalArgumentException("Phase must be 1 through 4");
 		}
-		// User-assumed P1:P2:P3:P4 = 2:1:2:2, not official Jagex weights.
-		return 300.0 * (phase == 2 ? 1 : 2) / 7;
+		// User-assumed P1:P2:P3:P4 = 2:1:3:2, not official Jagex weights.
+		return 300.0 * (phase == 2 ? 1 : phase == 3 ? 3 : 2) / 8;
 	}
 
 	public void addDeath()
@@ -124,4 +124,3 @@ public class PurpleChanceModel
 		return teamChance(players) * Math.min(700, points) / 700.0;
 	}
 }
-
