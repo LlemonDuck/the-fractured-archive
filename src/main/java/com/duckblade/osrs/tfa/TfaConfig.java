@@ -1,6 +1,7 @@
 package com.duckblade.osrs.tfa;
 
 import com.duckblade.osrs.tfa.features.hporbs.HpOrbMode;
+import com.duckblade.osrs.tfa.features.pointstracker.PointsTrackerOverlayEnableMode;
 import com.duckblade.osrs.tfa.features.updatenotifier.UpdateNotifier;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -30,6 +31,14 @@ public interface TfaConfig extends Config
 		closedByDefault = true
 	)
 	String SECTION_LOOT = "sectionLoot";
+
+	@ConfigSection(
+		name = "Points Tracker",
+		description = "Options for the points tracker.",
+		position = 1,
+		closedByDefault = true
+	)
+	String SECTION_POINTS_TRACKER = "pointsTracker";
 
 	// Miscellaneous
 
@@ -105,6 +114,93 @@ public interface TfaConfig extends Config
 	default boolean lootNoEarlySparkle()
 	{
 		return false;
+	}
+
+	// points tracker
+
+	@ConfigItem(
+		keyName = "pointsTrackerOverlayEnableMode",
+		name = "Enable Overlay",
+		description = "Show points earned within the raid.",
+		position = 0,
+		section = SECTION_POINTS_TRACKER
+	)
+	default PointsTrackerOverlayEnableMode pointsTrackerOverlayEnableMode()
+	{
+		return PointsTrackerOverlayEnableMode.ALWAYS;
+	}
+
+	@ConfigItem(
+		keyName = "pointsTrackerShowTeamPoints",
+		name = "Show Team Points",
+		description = "Show team points on the overlay.",
+		position = 1,
+		section = SECTION_POINTS_TRACKER
+	)
+	default boolean pointsTrackerShowTeamPoints()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "pointsTrackerShowPersonalPoints",
+		name = "Show Personal Points",
+		description = "Show unique chance on the overlay.",
+		position = 2,
+		section = SECTION_POINTS_TRACKER
+	)
+	default boolean pointsTrackerShowPersonalPoints()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "pointsTrackerShowTeamUniqueChance",
+		name = "Show Team Unique %",
+		description = "Show unique chance on the overlay.",
+		position = 3,
+		section = SECTION_POINTS_TRACKER
+	)
+	default boolean pointsTrackerShowTeamUniqueChance()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "pointsTrackerShowPersonalUniqueChance",
+		name = "Show Personal Unique %",
+		description = "Show personal unique chance on the overlay.",
+		position = 4,
+		section = SECTION_POINTS_TRACKER
+	)
+	default boolean pointsTrackerShowPersonalUniqueChance()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "pointsTrackerPostRaidMessage",
+		name = "Points Total Message",
+		description = "Show the total points in chat after the raid, akin to the Chambers of Xeric.",
+		position = 6,
+		section = SECTION_POINTS_TRACKER
+	)
+	default boolean pointsTrackerPostRaidMessage()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "pointsTrackerAllowExternal",
+		name = "Send to External Plugins",
+		description = "Sends the points totals to other locally installed plugins on raid completion." +
+			"<br />Disabling this may prevent other plugins from working properly.",
+		position = 7,
+		section = SECTION_POINTS_TRACKER
+	)
+	default boolean pointsTrackerAllowExternal()
+	{
+		return true;
 	}
 
 	// hidden

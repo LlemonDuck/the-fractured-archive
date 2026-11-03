@@ -18,6 +18,8 @@ import net.runelite.client.plugins.PluginDescriptor;
 public class TfaPlugin extends Plugin
 {
 
+	public static final String EVENT_NAMESPACE = "the-fractured-archive";
+
 	@Inject
 	private Injector injector;
 

@@ -29,6 +29,8 @@ public class RaidStateTracker
 		.inRaid(false)
 		.currentRoom(null)
 		.playerCount(0)
+		.spectator(false)
+		.practice(false)
 		.build();
 
 	private final Client client;
@@ -54,12 +56,21 @@ public class RaidStateTracker
 		raidLeaveTicks = inRaidRaw ? 3 : raidLeaveTicks - 1;
 		boolean inRaid = raidLeaveTicks > 0;
 
+		// 0 = alive
+		// 1 = dead but part of raid
+		// 2 = third party spectator
+		boolean spectator = client.getVarbitValue(VarbitID.TFA_CLIENT_SPECTATE_MODE) >= 2;
+
+		boolean practice = false; // todo
+
 		setRaidState(
 			RaidState.builder()
 				.inLobby(region == REGION_LOBBY)
 				.inRaid(inRaid)
 				.currentRoom(currentRoom)
 				.playerCount(countPlayers())
+				.spectator(spectator)
+				.practice(practice)
 				.build(),
 			false
 		);

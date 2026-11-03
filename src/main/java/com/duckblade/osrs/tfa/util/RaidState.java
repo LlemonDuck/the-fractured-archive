@@ -12,5 +12,7 @@ public class RaidState
 	boolean inRaid;
 	RaidRoom currentRoom;
 	int playerCount;
+	boolean spectator;
+	boolean practice;
 
 }
