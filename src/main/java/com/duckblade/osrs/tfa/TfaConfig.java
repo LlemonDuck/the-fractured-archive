@@ -107,6 +107,18 @@ public interface TfaConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+		keyName = "showPersonalPurpleChance",
+		name = "Personal Purple Estimate",
+		description = "Project your purple chance from observed damage and deaths. Approximate: unknown minion caps and Ocellus phase weights.",
+		position = 2,
+		section = SECTION_LOOT
+	)
+	default boolean showPersonalPurpleChance()
+	{
+		return true;
+	}
+
 	// hidden
 
 	@ConfigItem(

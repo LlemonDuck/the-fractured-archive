@@ -3,6 +3,8 @@ package com.duckblade.osrs.tfa.module;
 import com.duckblade.osrs.tfa.TfaConfig;
 import com.duckblade.osrs.tfa.features.FadeDisabler;
 import com.duckblade.osrs.tfa.features.LobbyBoardHighlighter;
+import com.duckblade.osrs.tfa.features.purple.PurpleChanceOverlay;
+import com.duckblade.osrs.tfa.features.purple.PurpleChanceTracker;
 import com.duckblade.osrs.tfa.features.hporbs.HealthBarsOverlay;
 import com.duckblade.osrs.tfa.features.loot.LootLeftClickBankAll;
 import com.duckblade.osrs.tfa.features.loot.LootNoEarlySparkle;
@@ -31,6 +33,8 @@ public class TfaModule extends AbstractModule
 	@Provides
 	Set<PluginLifecycleComponent> lifecycleComponents(
 		FadeDisabler fadeDisabler,
+		PurpleChanceOverlay purpleChanceOverlay,
+		PurpleChanceTracker purpleChanceTracker,
 		HealthBarsOverlay healthBarsOverlay,
 		LobbyBoardHighlighter lobbyBoardHighlighter,
 		LootLeftClickBankAll lootLeftClickBankAll,
@@ -42,6 +46,8 @@ public class TfaModule extends AbstractModule
 	{
 		return ImmutableSet.of(
 			fadeDisabler,
+			purpleChanceOverlay,
+			purpleChanceTracker,
 			healthBarsOverlay,
 			lobbyBoardHighlighter,
 			lootLeftClickBankAll,
