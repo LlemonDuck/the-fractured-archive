@@ -3,10 +3,13 @@ package com.duckblade.osrs.tfa;
 import com.duckblade.osrs.tfa.features.hporbs.HpOrbMode;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsTrackerOverlayEnableMode;
 import com.duckblade.osrs.tfa.features.updatenotifier.UpdateNotifier;
+import java.awt.Color;
+import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
+import net.runelite.client.config.Range;
 
 @ConfigGroup(TfaConfig.CONFIG_GROUP)
 public interface TfaConfig extends Config
@@ -136,6 +139,57 @@ public interface TfaConfig extends Config
 	default boolean leftClickBankAll()
 	{
 		return true;
+	}
+
+	@ConfigItem(
+		keyName = "lootChestHighlightEnabled",
+		name = "Loot Chest Highlight",
+		description = "",
+		position = 1,
+		section = SECTION_LOOT
+	)
+	default boolean lootChestHighlightEnabled()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "lootChestGlowStrength",
+		name = " ↳ Strength",
+		description = "",
+		position = 2,
+		section = SECTION_LOOT
+	)
+	@Range(min = 1, max = 20)
+	default int lootChestGlowStrength()
+	{
+		return 5;
+	}
+
+	@ConfigItem(
+		keyName = "lootChestGlowColourStandard",
+		name = " ↳ Colour - Standard",
+		description = "",
+		position = 3,
+		section = SECTION_LOOT
+	)
+	@Alpha
+	default Color lootChestGlowColourStandard()
+	{
+		return new Color(255, 255, 255, 64);
+	}
+
+	@ConfigItem(
+		keyName = "lootChestGlowColourUnique",
+		name = " ↳ Colour - Unique",
+		description = "",
+		position = 5,
+		section = SECTION_LOOT
+	)
+	@Alpha
+	default Color lootChestGlowColourUnique()
+	{
+		return new Color(128, 0, 64, 128);
 	}
 
 	// points tracker

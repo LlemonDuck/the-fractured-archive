@@ -6,6 +6,7 @@ import com.duckblade.osrs.tfa.features.LobbyBoardHighlighter;
 import com.duckblade.osrs.tfa.features.hporbs.HealthBarsOverlay;
 import com.duckblade.osrs.tfa.features.lobby.ClaimYourLoot;
 import com.duckblade.osrs.tfa.features.lobby.SpellbookWarning;
+import com.duckblade.osrs.tfa.features.loot.LootChestHighlight;
 import com.duckblade.osrs.tfa.features.loot.LootLeftClickBankAll;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsOverlay;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsTracker;
@@ -37,6 +38,7 @@ public class TfaModule extends AbstractModule
 		FadeDisabler fadeDisabler,
 		HealthBarsOverlay healthBarsOverlay,
 		LobbyBoardHighlighter lobbyBoardHighlighter,
+		LootChestHighlight lootChestHighlight,
 		LootLeftClickBankAll lootLeftClickBankAll,
 		PointsOverlay pointsOverlay,
 		PointsTracker pointsTracker,
@@ -51,6 +53,7 @@ public class TfaModule extends AbstractModule
 			fadeDisabler,
 			healthBarsOverlay,
 			lobbyBoardHighlighter,
+			lootChestHighlight,
 			lootLeftClickBankAll,
 			pointsOverlay,
 			pointsTracker,
