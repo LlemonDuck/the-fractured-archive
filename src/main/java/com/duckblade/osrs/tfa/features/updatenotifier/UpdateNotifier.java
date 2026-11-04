@@ -20,7 +20,7 @@ public class UpdateNotifier
 	implements PluginLifecycleComponent
 {
 
-	public static final int TARGET_VERSION = 3;
+	public static final int TARGET_VERSION = 4;
 	private static final BufferedImage PANEL_ICON = ImageUtil.loadImageResource(UpdateNotifier.class, "icon.png");
 
 	private final ClientToolbar clientToolbar;
@@ -82,6 +82,11 @@ public class UpdateNotifier
 			case 2:
 				updates.add("<strong>(Points Tracker) Added a points tracker showing team and personal purple rates. Unlike the ToA points tracker, this one only updates at the end of rooms, and does not require the party plugin.");
 				updates.add("<strong>(Removed Loot -> Prevent Early Sparkle) Jagex has implemented this themselves.");
+
+			case 3:
+				updates.add("<string>(Loot -> Loot Chest Highlight) Added a chest highlight to help quickly identify your loot chest.");
+				updates.add("<string>(Lobby -> Loot Reminder) A reminder to claim your loot if you did not claim it in the raid.");
+				updates.add("<string>(Lobby -> Spellbook Warning) Displays your current spellbook on the raid entrance.");
 		}
 
 		return updates;
