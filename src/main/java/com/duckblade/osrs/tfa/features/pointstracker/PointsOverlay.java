@@ -4,6 +4,7 @@ import com.duckblade.osrs.tfa.TfaConfig;
 import com.duckblade.osrs.tfa.module.PluginLifecycleComponent;
 import com.duckblade.osrs.tfa.util.RaidRoom;
 import com.duckblade.osrs.tfa.util.RaidState;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
@@ -55,7 +56,8 @@ public class PointsOverlay
 	{
 		panelComponent.getChildren().add(
 			TitleComponent.builder()
-				.text("TFA Points")
+				.text("TFA Points" + (pointsTracker.isAccurate() ? " (Non-Party!)" : ""))
+				.color(pointsTracker.isAccurate() ? Color.GREEN : Color.YELLOW)
 				.build()
 		);
 
