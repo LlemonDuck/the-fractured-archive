@@ -8,6 +8,7 @@ import com.duckblade.osrs.tfa.features.lobby.ClaimYourLoot;
 import com.duckblade.osrs.tfa.features.lobby.SpellbookWarning;
 import com.duckblade.osrs.tfa.features.loot.LootChestHighlight;
 import com.duckblade.osrs.tfa.features.loot.LootLeftClickBankAll;
+import com.duckblade.osrs.tfa.features.pointstracker.PartyDamageTracker;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsOverlay;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsTracker;
 import com.duckblade.osrs.tfa.features.updatenotifier.UpdateNotifier;
@@ -40,6 +41,7 @@ public class TfaModule extends AbstractModule
 		LobbyBoardHighlighter lobbyBoardHighlighter,
 		LootChestHighlight lootChestHighlight,
 		LootLeftClickBankAll lootLeftClickBankAll,
+		PartyDamageTracker partyDamageTracker,
 		PointsOverlay pointsOverlay,
 		PointsTracker pointsTracker,
 		RaidCompletionTracker raidCompletionTracker,
@@ -55,6 +57,7 @@ public class TfaModule extends AbstractModule
 			lobbyBoardHighlighter,
 			lootChestHighlight,
 			lootLeftClickBankAll,
+			partyDamageTracker,
 			pointsOverlay,
 			pointsTracker,
 			raidCompletionTracker,
