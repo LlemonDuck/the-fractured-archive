@@ -55,7 +55,7 @@ public class PointsTracker
 
 	private static final String DEATH_MESSAGE = "Total deaths";
 	private static final String PERSONAL_DEATH_PREFIX = "You have died";
-	private static final Pattern OTHER_DEATH_PATTERN = Pattern.compile("^(.+) has died\\. Total deaths: \\d+$");
+	private static final Pattern OTHER_DEATH_PATTERN = Pattern.compile("^(.+) has died\\. Total deaths: \\d+\\.$");
 	private static final String ROOM_FINISH_MESSAGE = "Challenge complete";
 
 	private static final int BASE_ROOM_POINTS = 100;
@@ -140,6 +140,8 @@ public class PointsTracker
 	@Subscribe
 	public void onChatMessage(ChatMessage e)
 	{
+		log.trace("chat message type={} message={}", e.getType(), e.getMessage());
+
 		if (e.getType() != ChatMessageType.GAMEMESSAGE)
 		{
 			return;
@@ -183,17 +185,20 @@ public class PointsTracker
 	@Subscribe
 	public void onHitsplatApplied(HitsplatApplied e)
 	{
-		if (e.getHitsplat().getAmount() < 1
-			|| !(e.getActor() instanceof NPC)
-			|| e.getHitsplat().getHitsplatType() == HitsplatID.HEAL)
+		boolean counted = e.getHitsplat().getAmount() >= 1
+			&& e.getActor() instanceof NPC
+			&& e.getHitsplat().getHitsplatType() != HitsplatID.HEAL;
+
+		log.trace("hitsplat type={} amount={} mine={} actor={} counted={}",
+			e.getHitsplat().getHitsplatType(), e.getHitsplat().getAmount(), e.getHitsplat().isMine(),
+			e.getActor() == null ? null : e.getActor().getName(), counted);
+
+		if (!counted)
 		{
 			return;
 		}
 
-		NPC target = (NPC) e.getActor();
 		int damage = e.getHitsplat().getAmount();
-
-		log.trace("Hitsplat type {} damage {} on {}", e.getHitsplat().getHitsplatType(), damage, target.getId());
 
 		pendingRoomDamage += damage;
 		if (e.getHitsplat().isMine())
@@ -290,10 +295,12 @@ public class PointsTracker
 		{
 			// deaths that happen right after a room clear need to be deferred
 			// until the room points are settled
+			log.debug("death penalty for {} deferred behind pending {}.{}", name, pending.getRoom(), pending.getPhase());
 			deferredDeaths.add(name);
 		}
 		else
 		{
+			log.debug("death penalty for {} applied immediately", name);
 			ledger.adjust(name, -deathPenalty);
 		}
 	}
@@ -379,6 +386,7 @@ public class PointsTracker
 
 		for (String deadPlayer : deferredDeaths)
 		{
+			log.debug("applying deferred death penalty for {}", deadPlayer);
 			ledger.adjust(deadPlayer, -deathPenalty);
 		}
 		deferredDeaths.clear();
@@ -403,12 +411,16 @@ public class PointsTracker
 			? (int) (((long) roomPoints * personalDamage) / observedRoomDamage)
 			: 0;
 
+		log.debug("fallback: {}/{} room points to local player ({} personal / {} observed damage), {} unattributed",
+			localShare, roomPoints, personalDamage, observedRoomDamage, roomPoints - localShare);
+
 		ledger.adjust(localName, localShare);
 		ledger.addUnattributed(roomPoints - localShare);
 	}
 
 	private void finishRaid()
 	{
+		log.debug("raid finished: team={} personal={} accurate={}", getTeamPoints(), getPersonalPoints(), accurate);
 		postPointsEvent();
 		postPointsMessage();
 	}

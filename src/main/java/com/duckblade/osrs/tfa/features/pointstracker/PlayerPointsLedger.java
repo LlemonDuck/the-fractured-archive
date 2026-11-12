@@ -18,12 +18,15 @@ class PlayerPointsLedger
 	void adjust(String player, int delta)
 	{
 		int current = totals.getOrDefault(player, 0);
-		totals.put(player, Math.max(FLOOR, current + delta));
+		int next = Math.max(FLOOR, current + delta);
+		totals.put(player, next);
+		log.debug("{} {}{} -> {}", player, delta >= 0 ? "+" : "", delta, next);
 	}
 
 	void addUnattributed(int amount)
 	{
 		unattributed += amount;
+		log.debug("unattributed +{} -> {}", amount, unattributed);
 	}
 
 	int getUnattributed()

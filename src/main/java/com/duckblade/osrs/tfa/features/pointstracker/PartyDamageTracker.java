@@ -65,13 +65,15 @@ public class PartyDamageTracker
 		PartyMember member = partyService.getMemberById(e.getMemberId());
 		if (member == null)
 		{
+			log.trace("Ignoring damage report from unresolvable party member id {} for {}.{}: {}",
+				e.getMemberId(), e.getRoom(), e.getPhase(), e.getDamage());
 			return;
 		}
 
 		String name = Text.toJagexName(member.getDisplayName());
 		if (!raidStateTracker.getRaidMemberNames().contains(name))
 		{
-			log.trace("Ignoring damage report from non-raid-member {}", name);
+			log.trace("Ignoring damage report from non-raid-member {} for {}.{}: {}", name, e.getRoom(), e.getPhase(), e.getDamage());
 			return;
 		}
 
@@ -81,6 +83,7 @@ public class PartyDamageTracker
 
 	public void recordOwnReport(RaidRoom room, int phase, String standardizedLocalName, int damage)
 	{
+		log.debug("recording own damage report for {}.{}: {}", room, phase, damage);
 		store(room, phase, standardizedLocalName, damage);
 		if (partyService.isInParty())
 		{

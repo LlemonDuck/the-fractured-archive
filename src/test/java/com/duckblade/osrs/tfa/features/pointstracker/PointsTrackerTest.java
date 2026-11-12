@@ -136,8 +136,8 @@ class PointsTrackerTest
 		when(partyService.isInParty()).thenReturn(true);
 
 		// get Alice to the floor via two immediate deaths (nothing pending yet): 0 -> -35 -> -50
-		died("You have died. Total deaths: 1");
-		died("You have died. Total deaths: 2");
+		died("You have died. Total deaths: 1.");
+		died("You have died. Total deaths: 2.");
 		assertEquals(-50, tracker.getPersonalPoints());
 
 		Map<String, Integer> reports = new HashMap<>();
@@ -147,7 +147,7 @@ class PointsTrackerTest
 		hit(true, 12);
 		challengeComplete(); // starts pending: incomplete (Bob hasn't reported), doesn't resolve yet
 
-		died("You have died. Total deaths: 3"); // observed while pending -> must defer
+		died("You have died. Total deaths: 3."); // observed while pending -> must defer
 
 		// still not resolved, so the deferred death must not have landed yet
 		assertEquals(-50, tracker.getPersonalPoints());
@@ -173,8 +173,8 @@ class PointsTrackerTest
 		hit(true, 12);
 		challengeComplete(); // pending, incomplete
 
-		died("You have died. Total deaths: 1"); // Alice, deferred
-		died("Bob has died. Total deaths: 1"); // Bob, deferred
+		died("You have died. Total deaths: 1."); // Alice, deferred
+		died("Bob has died. Total deaths: 1."); // Bob, deferred
 
 		reports.put("Bob", 88);
 		tracker.onGameTick(new GameTick()); // resolves: awards (Alice 12, Bob 88), then both deferred deaths
@@ -198,7 +198,7 @@ class PointsTrackerTest
 		hit(true, 10);
 		tracker.onChatMessage(new ChatMessage(null, ChatMessageType.GAMEMESSAGE, "", "Challenge complete: Ocellus.", "", 0));
 		// pending, incomplete (Bob hasn't reported) -> this death must defer behind the award
-		died("You have died. Total deaths: 1");
+		died("You have died. Total deaths: 1.");
 
 		verify(eventBus, never()).post(org.mockito.ArgumentMatchers.any(PluginMessage.class));
 
@@ -226,7 +226,7 @@ class PointsTrackerTest
 
 		hit(true, 12);
 		challengeComplete(); // pending, incomplete
-		died("You have died. Total deaths: 1"); // deferred
+		died("You have died. Total deaths: 1."); // deferred
 
 		assertEquals(0, tracker.getPersonalPoints());
 
@@ -242,7 +242,7 @@ class PointsTrackerTest
 	void parsesPersonalDeathMessage()
 	{
 		start(2, RaidRoom.EZEKIEL);
-		died("You have died. Total deaths: 4");
+		died("You have died. Total deaths: 4.");
 		assertEquals(-35, tracker.getPersonalPoints());
 	}
 
@@ -253,7 +253,7 @@ class PointsTrackerTest
 		when(partyService.isInParty()).thenReturn(true);
 		when(partyDamageTracker.getDamageByName(RaidRoom.EZEKIEL, 0)).thenReturn(Map.of("Alice", 0, "Bob", 100));
 
-		died("<col=ff0000>Bob</col> has died. Total deaths: 1");
+		died("<col=ff0000>Bob</col> has died. Total deaths: 1.");
 
 		hit(true, 0);
 		challengeComplete(); // resolves immediately (full set already present) -> Bob gets 100
