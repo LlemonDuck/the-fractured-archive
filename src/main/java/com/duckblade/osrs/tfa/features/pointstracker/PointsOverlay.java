@@ -63,7 +63,7 @@ public class PointsOverlay
 		{
 			addPointsLine("Total:", pointsTracker.getTeamPoints());
 		}
-		if (config.pointsTrackerShowPersonalUniqueChance())
+		if (config.pointsTrackerShowPersonalPoints())
 		{
 			addPointsLine("Personal:", pointsTracker.getPersonalPoints());
 		}

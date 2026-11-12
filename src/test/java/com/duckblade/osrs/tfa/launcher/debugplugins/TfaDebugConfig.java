@@ -22,6 +22,17 @@ public interface TfaDebugConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "eventFileLogger",
+		description = "Logs every hitsplat, chat message, party message and points adjustment to a file under "
+			+ "RuneLite's logs directory, for out-of-band analysis. Takes effect on plugin (re)start.",
+		name = "Event File Log"
+	)
+	default boolean eventFileLogger()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "stateOverlay",
 		description = "",
 		name = "State Overlay"

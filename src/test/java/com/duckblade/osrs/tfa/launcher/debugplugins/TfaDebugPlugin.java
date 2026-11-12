@@ -26,13 +26,24 @@ public class TfaDebugPlugin extends Plugin
 	private StateOverlay stateOverlay;
 
 	@Inject
+	private EventFileLogger eventFileLogger;
+
+	@Inject
 	private EventBus eventBus;
+
+	@Inject
+	private TfaDebugConfig config;
 
 	@Override
 	protected void startUp()
 	{
 		overlayManager.add(stateOverlay);
 		eventBus.register(menuEntryDumper);
+
+		if (config.eventFileLogger())
+		{
+			eventFileLogger.start();
+		}
 	}
 
 	@Override
@@ -40,6 +51,7 @@ public class TfaDebugPlugin extends Plugin
 	{
 		overlayManager.remove(stateOverlay);
 		eventBus.unregister(menuEntryDumper);
+		eventFileLogger.stop();
 	}
 
 	@Provides
