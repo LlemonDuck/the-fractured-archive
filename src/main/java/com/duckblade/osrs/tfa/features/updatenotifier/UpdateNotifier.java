@@ -20,7 +20,7 @@ public class UpdateNotifier
 	implements PluginLifecycleComponent
 {
 
-	public static final int TARGET_VERSION = 4;
+	public static final int TARGET_VERSION = 5;
 	private static final BufferedImage PANEL_ICON = ImageUtil.loadImageResource(UpdateNotifier.class, "icon.png");
 
 	private final ClientToolbar clientToolbar;
@@ -87,6 +87,9 @@ public class UpdateNotifier
 				updates.add("<string>(Loot -> Loot Chest Highlight) Added a chest highlight to help quickly identify your loot chest.");
 				updates.add("<string>(Lobby -> Loot Reminder) A reminder to claim your loot if you did not claim it in the raid.");
 				updates.add("<string>(Lobby -> Spellbook Warning) Displays your current spellbook on the raid entrance.");
+
+			case 4:
+				updates.add("<string>Points Tracker</strong> Now uses the RL Party system to get more accurate counts. <em>ALL</em> players must be in party with the TFA plugin or else you will get very inaccurate estimates.");
 		}
 
 		return updates;
