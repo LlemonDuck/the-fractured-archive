@@ -7,12 +7,14 @@ import com.duckblade.osrs.tfa.util.RaidRoom;
 import com.duckblade.osrs.tfa.util.RaidState;
 import com.duckblade.osrs.tfa.util.RaidStateTracker;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import java.awt.Color;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
@@ -47,7 +49,7 @@ public class PointsTracker
 	implements PluginLifecycleComponent
 {
 
-	public static final String EVENT_NAME = "raidCompletedPoints";
+	private static final String EVENT_NAME = "raidCompletedPoints";
 	private static final int EVENT_VERSION = 2;
 
 	static final NumberFormat POINTS_FORMAT = NumberFormat.getInstance();
@@ -64,6 +66,17 @@ public class PointsTracker
 	private static final int OCELLUS_P3_POINTS = 158;
 	private static final int OCELLUS_P4_POINTS = 52;
 	private static final int RAID_TOTAL_POINTS = (4 * BASE_ROOM_POINTS) + OCELLUS_P1_POINTS + OCELLUS_P2_POINTS + OCELLUS_P3_POINTS + OCELLUS_P4_POINTS;
+
+	private static final Map<Integer, Double> DROP_RATES = ImmutableMap.<Integer, Double>builder()
+		.put(1, 1.0 / 16)
+		.put(2, 1.0 / 16)
+		.put(3, 1.0 / 12.5)
+		.put(4, 1.0 / 10.5)
+		.put(5, 1.0 / 9.5)
+		.put(6, 1.0 / 8.5)
+		.put(7, 1.0 / 8)
+		.put(8, 1.0 / 7.5)
+		.build();
 
 	// how long to wait for the rest of the party to report their damage for a room/phase
 	private static final int PARTY_TIMEOUT_TICKS = 8;
@@ -279,7 +292,7 @@ public class PointsTracker
 
 	public double getTeamUniqueChance()
 	{
-		double baseChance = 1 / (14 * (1 - (0.03 * Math.max(0, teamSize - 2))));
+		double baseChance = DROP_RATES.getOrDefault(teamSize, 1.0 / 16);
 		double pointsRatio = (double) getTeamPoints() / RAID_TOTAL_POINTS;
 		return baseChance * pointsRatio;
 	}
