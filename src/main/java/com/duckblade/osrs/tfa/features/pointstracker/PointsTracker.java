@@ -7,14 +7,12 @@ import com.duckblade.osrs.tfa.util.RaidRoom;
 import com.duckblade.osrs.tfa.util.RaidState;
 import com.duckblade.osrs.tfa.util.RaidStateTracker;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import java.awt.Color;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
@@ -202,9 +200,11 @@ public class PointsTracker
 			&& e.getActor() instanceof NPC
 			&& e.getHitsplat().getHitsplatType() != HitsplatID.HEAL;
 
-		log.trace("hitsplat type={} amount={} mine={} actor={} counted={}",
+		log.trace(
+			"hitsplat type={} amount={} mine={} actor={} counted={}",
 			e.getHitsplat().getHitsplatType(), e.getHitsplat().getAmount(), e.getHitsplat().isMine(),
-			e.getActor() == null ? null : e.getActor().getName(), counted);
+			e.getActor() == null ? null : e.getActor().getName(), counted
+		);
 
 		if (!counted)
 		{
@@ -354,8 +354,10 @@ public class PointsTracker
 			return;
 		}
 
-		pending = new PendingRoomPhase(room, phase, roomPoints, isFinalRoom, raidStateTracker.getRaidMemberNames(),
-			localDamage, observedDamage, PARTY_TIMEOUT_TICKS);
+		pending = new PendingRoomPhase(
+			room, phase, roomPoints, isFinalRoom, raidStateTracker.getRaidMemberNames(),
+			localDamage, observedDamage, PARTY_TIMEOUT_TICKS
+		);
 
 		partyDamageTracker.recordOwnReport(room, phase, localName, localDamage);
 		tryResolvePending();
@@ -392,8 +394,10 @@ public class PointsTracker
 		}
 		else
 		{
-			log.debug("party data incomplete for {}.{} after timeout (roster {}), using fallback",
-				pending.getRoom(), pending.getPhase(), pending.getRoster());
+			log.debug(
+				"party data incomplete for {}.{} after timeout (roster {}), using fallback",
+				pending.getRoom(), pending.getPhase(), pending.getRoster()
+			);
 			applyFallback(pending.getRoomPoints(), pending.getFallbackLocalDamage(), pending.getFallbackObservedDamage());
 		}
 
@@ -424,8 +428,10 @@ public class PointsTracker
 			? (int) (((long) roomPoints * personalDamage) / observedRoomDamage)
 			: 0;
 
-		log.debug("fallback: {}/{} room points to local player ({} personal / {} observed damage), {} unattributed",
-			localShare, roomPoints, personalDamage, observedRoomDamage, roomPoints - localShare);
+		log.debug(
+			"fallback: {}/{} room points to local player ({} personal / {} observed damage), {} unattributed",
+			localShare, roomPoints, personalDamage, observedRoomDamage, roomPoints - localShare
+		);
 
 		ledger.adjust(localName, localShare);
 		ledger.addUnattributed(roomPoints - localShare);
@@ -460,7 +466,8 @@ public class PointsTracker
 
 		if (!accurate)
 		{
-			queueMessage("One or more raid members do not have the TFA plugin and/or are not in a RuneLite party together. Points are a rough estimate.");
+			queueMessage(
+				"One or more raid members do not have the TFA plugin and/or are not in a RuneLite party together. Points are a rough estimate.");
 		}
 	}
 
