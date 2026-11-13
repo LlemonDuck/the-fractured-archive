@@ -56,7 +56,7 @@ public class PointsOverlay
 	{
 		panelComponent.getChildren().add(
 			TitleComponent.builder()
-				.text("TFA Points" + (pointsTracker.isAccurate() ? " (Non-Party!)" : ""))
+				.text("TFA Points" + (!pointsTracker.isAccurate() ? " (Non-Party!)" : ""))
 				.color(pointsTracker.isAccurate() ? Color.GREEN : Color.YELLOW)
 				.build()
 		);
