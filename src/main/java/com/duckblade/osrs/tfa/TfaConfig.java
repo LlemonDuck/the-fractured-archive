@@ -36,9 +36,17 @@ public interface TfaConfig extends Config
 	String SECTION_LOBBY = "sectionLobby";
 
 	@ConfigSection(
+		name = "Resupply",
+		description = "Options for the mid-raid resupply.",
+		position = 2,
+		closedByDefault = true
+	)
+	String SECTION_RESUPPLY = "sectionResupply";
+
+	@ConfigSection(
 		name = "Loot",
 		description = "Options for the loot room.",
-		position = 2,
+		position = 3,
 		closedByDefault = true
 	)
 	String SECTION_LOOT = "sectionLoot";
@@ -46,7 +54,7 @@ public interface TfaConfig extends Config
 	@ConfigSection(
 		name = "Points Tracker",
 		description = "Options for the points tracker.",
-		position = 3,
+		position = 4,
 		closedByDefault = true
 	)
 	String SECTION_POINTS_TRACKER = "pointsTracker";
@@ -125,6 +133,19 @@ public interface TfaConfig extends Config
 	default boolean lobbySpellbookWarning()
 	{
 		return false;
+	}
+
+	// Resupply
+	@ConfigItem(
+		keyName = "resupplyBuyMenuSwap",
+		name = "Buy Menu-Swap",
+		description = "Deprioritizes 'Select' so you can left-click buy items from the Quartermaster.",
+		section = SECTION_RESUPPLY,
+		position = 0
+	)
+	default boolean resupplyBuyMenuSwap()
+	{
+		return true;
 	}
 
 	// Loot

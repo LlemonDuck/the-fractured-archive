@@ -11,6 +11,7 @@ import com.duckblade.osrs.tfa.features.loot.LootLeftClickBankAll;
 import com.duckblade.osrs.tfa.features.pointstracker.PartyDamageTracker;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsOverlay;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsTracker;
+import com.duckblade.osrs.tfa.features.resupply.BuyMenuSwapper;
 import com.duckblade.osrs.tfa.features.updatenotifier.UpdateNotifier;
 import com.duckblade.osrs.tfa.util.RaidCompletionTracker;
 import com.duckblade.osrs.tfa.util.RaidStateTracker;
@@ -35,6 +36,7 @@ public class TfaModule extends AbstractModule
 
 	@Provides
 	Set<PluginLifecycleComponent> lifecycleComponents(
+		BuyMenuSwapper buyMenuSwapper,
 		ClaimYourLoot claimYourLoot,
 		FadeDisabler fadeDisabler,
 		HealthBarsOverlay healthBarsOverlay,
@@ -51,6 +53,7 @@ public class TfaModule extends AbstractModule
 	)
 	{
 		return ImmutableSet.of(
+			buyMenuSwapper,
 			claimYourLoot,
 			fadeDisabler,
 			healthBarsOverlay,
