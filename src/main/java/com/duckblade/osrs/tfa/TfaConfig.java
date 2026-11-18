@@ -353,6 +353,18 @@ public interface TfaConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+		keyName = "timeTrackerChatMessage",
+		name = "Chat Message",
+		description = "Print the time of each room to the chat when Ocellus is defeated.",
+		position = 3,
+		section = SECTION_TIME_TRACKER
+	)
+	default boolean timeTrackerChatMessage()
+	{
+		return false;
+	}
+
 	// hidden
 
 	@ConfigItem(

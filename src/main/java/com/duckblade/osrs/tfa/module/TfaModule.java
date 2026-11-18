@@ -13,6 +13,7 @@ import com.duckblade.osrs.tfa.features.pointstracker.PointsOverlay;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsTracker;
 import com.duckblade.osrs.tfa.features.resupply.BuyMenuSwapper;
 import com.duckblade.osrs.tfa.features.timetracking.TimeTracker;
+import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerChatMessage;
 import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerFileDump;
 import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerInfoBoxes;
 import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerOverlay;
@@ -56,6 +57,7 @@ public class TfaModule extends AbstractModule
 		RaidStateTracker raidStateTracker,
 		SpellbookWarning spellbookWarning,
 		TimeTracker timeTracker,
+		TimeTrackerChatMessage timeTrackerChatMessage,
 		TimeTrackerFileDump timeTrackerFileDump,
 		TimeTrackerInfoBoxes timeTrackerInfoBoxes,
 		TimeTrackerOverlay timeTrackerOverlay,
@@ -78,6 +80,7 @@ public class TfaModule extends AbstractModule
 			raidStateTracker,
 			spellbookWarning,
 			timeTracker,
+			timeTrackerChatMessage,
 			timeTrackerFileDump,
 			timeTrackerInfoBoxes,
 			timeTrackerOverlay,
