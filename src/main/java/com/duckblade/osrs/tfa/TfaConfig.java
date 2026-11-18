@@ -2,6 +2,7 @@ package com.duckblade.osrs.tfa;
 
 import com.duckblade.osrs.tfa.features.hporbs.HpOrbMode;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsTrackerOverlayEnableMode;
+import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerOverlayMode;
 import com.duckblade.osrs.tfa.features.updatenotifier.UpdateNotifier;
 import java.awt.Color;
 import net.runelite.client.config.Alpha;
@@ -58,6 +59,14 @@ public interface TfaConfig extends Config
 		closedByDefault = true
 	)
 	String SECTION_POINTS_TRACKER = "pointsTracker";
+
+	@ConfigSection(
+		name = "Time Tracker",
+		description = "Options for the room time tracker.",
+		position = 5,
+		closedByDefault = true
+	)
+	String SECTION_TIME_TRACKER = "timeTracker";
 
 	// Miscellaneous
 
@@ -298,6 +307,23 @@ public interface TfaConfig extends Config
 	default boolean pointsTrackerAllowExternal()
 	{
 		return true;
+	}
+
+	// time tracker
+
+	@ConfigItem(
+		keyName = "timeTrackerOverlayMode",
+		name = "Overlay",
+		description = "Show room times on screen." +
+			"<br />Current: the room in progress and the total time." +
+			"<br />Past: completed rooms, the room in progress and the total time." +
+			"<br />All: a line for every room in the raid.",
+		position = 0,
+		section = SECTION_TIME_TRACKER
+	)
+	default TimeTrackerOverlayMode timeTrackerOverlayMode()
+	{
+		return TimeTrackerOverlayMode.OFF;
 	}
 
 	// hidden
