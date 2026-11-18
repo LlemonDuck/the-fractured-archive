@@ -3,6 +3,8 @@ package com.duckblade.osrs.tfa.module;
 import com.duckblade.osrs.tfa.TfaConfig;
 import com.duckblade.osrs.tfa.features.FadeDisabler;
 import com.duckblade.osrs.tfa.features.LobbyBoardHighlighter;
+import com.duckblade.osrs.tfa.features.purple.PurpleChanceOverlay;
+import com.duckblade.osrs.tfa.features.purple.PurpleChanceTracker;
 import com.duckblade.osrs.tfa.features.hporbs.HealthBarsOverlay;
 import com.duckblade.osrs.tfa.features.lobby.ClaimYourLoot;
 import com.duckblade.osrs.tfa.features.lobby.SpellbookWarning;
@@ -45,6 +47,8 @@ public class TfaModule extends AbstractModule
 		BuyMenuSwapper buyMenuSwapper,
 		ClaimYourLoot claimYourLoot,
 		FadeDisabler fadeDisabler,
+		PurpleChanceOverlay purpleChanceOverlay,
+		PurpleChanceTracker purpleChanceTracker,
 		HealthBarsOverlay healthBarsOverlay,
 		LobbyBoardHighlighter lobbyBoardHighlighter,
 		LootChestHighlight lootChestHighlight,
@@ -68,6 +72,8 @@ public class TfaModule extends AbstractModule
 			buyMenuSwapper,
 			claimYourLoot,
 			fadeDisabler,
+			purpleChanceOverlay,
+			purpleChanceTracker,
 			healthBarsOverlay,
 			lobbyBoardHighlighter,
 			lootChestHighlight,
