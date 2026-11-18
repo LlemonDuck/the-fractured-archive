@@ -5,15 +5,18 @@ import com.duckblade.osrs.tfa.module.TfaModule;
 import com.google.inject.Binder;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.util.Filepath;
 
 @Slf4j
 @PluginDescriptor(
 	name = "The Fractured Archive",
 	description = "Utilities and information for raiding The Fractured Archive.",
-	tags = {"tfa", "raid", "4"}
+	tags = {"tfa", "raid", "4"},
+	internalName = "the-fractured-archive"
 )
 public class TfaPlugin extends Plugin
 {
@@ -32,6 +35,11 @@ public class TfaPlugin extends Plugin
 	public void configure(Binder binder)
 	{
 		binder.install(new TfaModule());
+	}
+
+	public Filepath getDataDirectory() throws IOException
+	{
+		return getPluginDirectory();
 	}
 
 	@Override

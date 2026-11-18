@@ -2,6 +2,7 @@ package com.duckblade.osrs.tfa;
 
 import com.duckblade.osrs.tfa.features.hporbs.HpOrbMode;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsTrackerOverlayEnableMode;
+import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerFileMode;
 import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerOverlayMode;
 import com.duckblade.osrs.tfa.features.updatenotifier.UpdateNotifier;
 import java.awt.Color;
@@ -324,6 +325,20 @@ public interface TfaConfig extends Config
 	default TimeTrackerOverlayMode timeTrackerOverlayMode()
 	{
 		return TimeTrackerOverlayMode.OFF;
+	}
+
+	@ConfigItem(
+		keyName = "timeTrackerFileMode",
+		name = "Write to File",
+		description = "Write room times to splits.txt in a folder for the raid, in the plugin's data folder (.runelite/plugin-data/the-fractured-archive), when a raid ends." +
+			"<br />Complete Runs: only when Ocellus is defeated." +
+			"<br />All Runs: also when the raid ends before then, if at least one room was completed.",
+		position = 1,
+		section = SECTION_TIME_TRACKER
+	)
+	default TimeTrackerFileMode timeTrackerFileMode()
+	{
+		return TimeTrackerFileMode.OFF;
 	}
 
 	// hidden
