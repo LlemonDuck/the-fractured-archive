@@ -66,8 +66,8 @@ public class PointsTracker
 	private static final int RAID_TOTAL_POINTS = (4 * BASE_ROOM_POINTS) + OCELLUS_P1_POINTS + OCELLUS_P2_POINTS + OCELLUS_P3_POINTS + OCELLUS_P4_POINTS;
 
 	private static final Map<Integer, Double> DROP_RATES = ImmutableMap.<Integer, Double>builder()
-		.put(1, 1.0 / 16)
-		.put(2, 1.0 / 16)
+		.put(1, 1.0 / 17)
+		.put(2, 1.0 / 17)
 		.put(3, 1.0 / 12.5)
 		.put(4, 1.0 / 10.5)
 		.put(5, 1.0 / 9.5)
