@@ -341,6 +341,18 @@ public interface TfaConfig extends Config
 		return TimeTrackerFileMode.OFF;
 	}
 
+	@ConfigItem(
+		keyName = "timeTrackerInfoBoxes",
+		name = "Room Infoboxes",
+		description = "Show an infobox with the time of each room after it is completed.",
+		position = 2,
+		section = SECTION_TIME_TRACKER
+	)
+	default boolean timeTrackerInfoBoxes()
+	{
+		return false;
+	}
+
 	// hidden
 
 	@ConfigItem(
