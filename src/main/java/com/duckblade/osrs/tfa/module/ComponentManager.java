@@ -108,19 +108,24 @@ public class ComponentManager
 
 		try
 		{
+			component.startUp();
+			gameEventManager.simulateGameEvents(component);
+			states.put(component, true);
+
 			eventBus.register(component);
 			if (component instanceof Overlay)
 			{
 				overlayManager.add((Overlay) component);
 			}
-
-			component.startUp();
-			gameEventManager.simulateGameEvents(component);
-			states.put(component, true);
 		}
 		catch (Throwable e)
 		{
 			log.error("Failed to start TFA plugin component [{}]", component.getClass().getName(), e);
+			eventBus.unregister(component);
+			if (component instanceof Overlay)
+			{
+				overlayManager.remove((Overlay) component);
+			}
 		}
 	}
 
@@ -136,6 +141,12 @@ public class ComponentManager
 			log.debug("Disabling TFA plugin component [{}]", component.getClass().getName());
 		}
 
+		eventBus.unregister(component);
+		if (component instanceof Overlay)
+		{
+			overlayManager.remove((Overlay) component);
+		}
+
 		try
 		{
 			component.shutDown();
@@ -147,12 +158,6 @@ public class ComponentManager
 		finally
 		{
 			states.put(component, false);
-		}
-
-		eventBus.unregister(component);
-		if (component instanceof Overlay)
-		{
-			overlayManager.remove((Overlay) component);
 		}
 	}
 
