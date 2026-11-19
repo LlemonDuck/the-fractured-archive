@@ -3,6 +3,7 @@ package com.duckblade.osrs.tfa.module;
 import com.duckblade.osrs.tfa.TfaConfig;
 import com.duckblade.osrs.tfa.features.FadeDisabler;
 import com.duckblade.osrs.tfa.features.LobbyBoardHighlighter;
+import com.duckblade.osrs.tfa.features.QuickProceedSwaps;
 import com.duckblade.osrs.tfa.features.hporbs.HealthBarsOverlay;
 import com.duckblade.osrs.tfa.features.lobby.ClaimYourLoot;
 import com.duckblade.osrs.tfa.features.lobby.SpellbookWarning;
@@ -52,6 +53,7 @@ public class TfaModule extends AbstractModule
 		PartyDamageTracker partyDamageTracker,
 		PointsOverlay pointsOverlay,
 		PointsTracker pointsTracker,
+		QuickProceedSwaps quickProceedSwaps,
 		RaidCompletionTracker raidCompletionTracker,
 		RaidFolder raidFolder,
 		RaidStateTracker raidStateTracker,
@@ -75,6 +77,7 @@ public class TfaModule extends AbstractModule
 			partyDamageTracker,
 			pointsOverlay,
 			pointsTracker,
+			quickProceedSwaps,
 			raidCompletionTracker,
 			raidFolder,
 			raidStateTracker,

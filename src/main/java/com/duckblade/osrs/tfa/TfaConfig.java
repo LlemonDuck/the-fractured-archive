@@ -107,6 +107,18 @@ public interface TfaConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+		keyName = "quickProceedEnable",
+		name = "Quick Proceed",
+		description = "Left click proceed on NPCs and quick-enter/quick-use entryways.",
+		position = 4,
+		section = SECTION_MISCELLANEOUS
+	)
+	default boolean quickProceedEnable()
+	{
+		return true;
+	}
+
 	// Lobby
 
 	@ConfigItem(
