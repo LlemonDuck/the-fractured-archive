@@ -4,9 +4,16 @@ import com.duckblade.osrs.tfa.TfaConfig;
 import com.duckblade.osrs.tfa.module.PluginLifecycleComponent;
 import com.duckblade.osrs.tfa.util.RaidRoom;
 import com.duckblade.osrs.tfa.util.RaidState;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.client.eventbus.Subscribe;
 
+@Slf4j
+@Singleton
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class BuyMenuSwapper
 	implements PluginLifecycleComponent
 {

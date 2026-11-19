@@ -37,6 +37,8 @@ import java.awt.Point;
 import java.util.Arrays;
 import java.util.Objects;
 import javax.inject.Inject;
+import javax.inject.Singleton;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.gameval.InterfaceID;
@@ -48,23 +50,23 @@ import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.ProgressBarComponent;
 
+@Slf4j
+@Singleton
 public class HealthBarsOverlay
 	extends OverlayPanel
 	implements PluginLifecycleComponent
 {
 
-	private static final int BUILD_ORBS_WIDGET_SCRIPT_ID = 10037;
+	private static final int SCRIPT_ID_BUILD_ORBS = 10034;
 
 	private final Client client;
-	private final TfaConfig config;
 
-	private boolean drawBars;
+	private HpOrbMode mode;
 
 	@Inject
-	public HealthBarsOverlay(Client client, TfaConfig config)
+	public HealthBarsOverlay(Client client)
 	{
 		this.client = client;
-		this.config = config;
 
 		panelComponent.setGap(new Point(0, 3));
 		if (getPreferredPosition() == null)
@@ -76,15 +78,14 @@ public class HealthBarsOverlay
 	@Override
 	public boolean isEnabled(TfaConfig config, RaidState raidState)
 	{
-		HpOrbMode mode = config.hpOrbsMode();
-		drawBars = mode == HpOrbMode.HEALTH_BARS;
+		mode = config.hpOrbsMode();
 		return raidState.isInRaid() && mode != HpOrbMode.ORBS;
 	}
 
 	@Subscribe
 	public void onScriptPostFired(ScriptPostFired e)
 	{
-		if (e.getScriptId() == 10034)
+		if (e.getScriptId() == SCRIPT_ID_BUILD_ORBS)
 		{
 			hideOrbs();
 		}
@@ -112,7 +113,7 @@ public class HealthBarsOverlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!drawBars)
+		if (mode != HpOrbMode.HEALTH_BARS)
 		{
 			return null;
 		}
