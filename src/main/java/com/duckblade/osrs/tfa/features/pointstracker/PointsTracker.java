@@ -5,6 +5,7 @@ import com.duckblade.osrs.tfa.TfaPlugin;
 import com.duckblade.osrs.tfa.module.PluginLifecycleComponent;
 import com.duckblade.osrs.tfa.util.RaidRoom;
 import com.duckblade.osrs.tfa.util.RaidState;
+import com.duckblade.osrs.tfa.util.RaidStateChanged;
 import com.duckblade.osrs.tfa.util.RaidStateTracker;
 import com.google.common.collect.ImmutableMap;
 import java.awt.Color;
@@ -24,13 +25,9 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.HitsplatID;
 import net.runelite.api.NPC;
-import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
-import net.runelite.api.events.NpcChanged;
-import net.runelite.api.gameval.AnimationID;
-import net.runelite.api.gameval.NpcID;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.eventbus.EventBus;
@@ -56,7 +53,6 @@ public class PointsTracker
 	private static final String DEATH_MESSAGE = "Total deaths";
 	private static final String PERSONAL_DEATH_PREFIX = "You have died";
 	private static final Pattern OTHER_DEATH_PATTERN = Pattern.compile("^(.+) has died\\. Total deaths: \\d+\\.$");
-	private static final String ROOM_FINISH_MESSAGE = "Challenge complete";
 
 	private static final int BASE_ROOM_POINTS = 100;
 	private static final int OCELLUS_P1_POINTS = 60;
@@ -96,8 +92,6 @@ public class PointsTracker
 	private String localName;
 	private int teamSize;
 	private int deathPenalty;
-	private RaidRoom currentRoom;
-	private int ocellusQuadrantDestructs;
 
 	// damage observed via hitsplats since the last completion; used only by the fallback
 	private int pendingPersonalDamage;
@@ -115,11 +109,10 @@ public class PointsTracker
 	public boolean isEnabled(TfaConfig config, RaidState raidState)
 	{
 		teamSize = raidState.getPlayerCount();
-		currentRoom = raidState.getCurrentRoom();
 		deathPenalty = RAID_TOTAL_POINTS / Math.max(1, teamSize) / 10;
 
 		// always track even if not displaying
-		return raidState.isInRaid() && !raidState.isPractice() && !raidState.isSpectator();
+		return raidState.isRaiding();
 	}
 
 	@Override
@@ -129,7 +122,6 @@ public class PointsTracker
 		accurate = true;
 		pendingPersonalDamage = 0;
 		pendingRoomDamage = 0;
-		ocellusQuadrantDestructs = 0;
 		pending = null;
 		deferredDeaths.clear();
 		localName = Text.toJagexName(client.getLocalPlayer().getName());
@@ -151,15 +143,13 @@ public class PointsTracker
 	@Subscribe
 	public void onChatMessage(ChatMessage e)
 	{
-		log.trace("chat message type={} message={}", e.getType(), e.getMessage());
-
 		if (e.getType() != ChatMessageType.GAMEMESSAGE)
 		{
 			return;
 		}
 
 		String message = Text.removeTags(e.getMessage());
-
+		log.trace("gamemessage {}", message);
 		if (message.contains(DEATH_MESSAGE))
 		{
 			if (message.startsWith(PERSONAL_DEATH_PREFIX))
@@ -176,19 +166,6 @@ public class PointsTracker
 			else
 			{
 				log.warn("Death for unmatched player {}", message);
-			}
-			return;
-		}
-
-		if (message.startsWith(ROOM_FINISH_MESSAGE))
-		{
-			if (currentRoom == RaidRoom.OCELLUS)
-			{
-				completeRoom(currentRoom, 4);
-			}
-			else
-			{
-				completeRoom(currentRoom, 0);
 			}
 		}
 	}
@@ -221,38 +198,6 @@ public class PointsTracker
 	}
 
 	@Subscribe
-	public void onNpcChanged(NpcChanged e)
-	{
-		if (e.getNpc().getId() == NpcID.TFA_OCELLUS_P2)
-		{
-			completeRoom(RaidRoom.OCELLUS, 1);
-		}
-		else if (e.getNpc().getId() == NpcID.TFA_OCELLUS_P3)
-		{
-			completeRoom(RaidRoom.OCELLUS, 2);
-		}
-	}
-
-	@Subscribe
-	public void onAnimationChanged(AnimationChanged e)
-	{
-		if (!(e.getActor() instanceof NPC) ||
-			((NPC) e.getActor()).getId() != NpcID.TFA_OCELLUS_P3)
-		{
-			return;
-		}
-
-		if (e.getActor().getAnimation() == AnimationID.NPC_OCELLUS_QUADRANT_DESTROY_IN)
-		{
-			ocellusQuadrantDestructs++;
-			if (ocellusQuadrantDestructs == 3)
-			{
-				completeRoom(RaidRoom.OCELLUS, 3);
-			}
-		}
-	}
-
-	@Subscribe
 	public void onGameTick(GameTick e)
 	{
 		if (pending == null)
@@ -262,6 +207,15 @@ public class PointsTracker
 
 		pending.countDownTick();
 		tryResolvePending();
+	}
+
+	@Subscribe(priority = 1) // needs to be above ComponentManager to run before shutDown
+	public void onRaidStateChanged(RaidStateChanged e)
+	{
+		if (e.isPhaseCompleted())
+		{
+			completeRoom(e.getPreviousState().getCurrentRoom(), e.getPreviousState().getPhase());
+		}
 	}
 
 	public int getPersonalPoints()

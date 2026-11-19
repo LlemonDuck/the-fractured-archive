@@ -8,14 +8,21 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.NPC;
 import net.runelite.api.annotations.VarCStr;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.AnimationChanged;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.NpcChanged;
 import net.runelite.api.events.VarClientStrChanged;
+import net.runelite.api.gameval.AnimationID;
 import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.NpcID;
 import net.runelite.api.gameval.VarClientID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
@@ -29,10 +36,16 @@ public class RaidStateTracker
 	implements PluginLifecycleComponent
 {
 
+	public static final int PHASE_UNSTARTED = 0;
+	public static final int PHASE_COMPLETED = 5;
+
 	private static final int REGION_LOBBY = 16470;
 
 	private static final int ENTER_DEBOUNCE_TICKS = 5;
 	private static final int LEAVE_DEBOUNCE_TICKS = 3;
+
+	private static final String MESSAGE_ROOM_STARTED = "Challenge started: ";
+	private static final String MESSAGE_ROOM_FINISHED = "Challenge complete";
 
 	private static final ImmutableSet<Integer> PLAYER_NAME_VARCS = ImmutableSet.of(
 		VarClientID.TFA_CLIENT_NAME0,
@@ -49,6 +62,7 @@ public class RaidStateTracker
 		.inLobby(false)
 		.inRaid(false)
 		.currentRoom(null)
+		.phase(PHASE_UNSTARTED)
 		.playerCount(0)
 		.spectator(false)
 		.practice(false)
@@ -56,6 +70,7 @@ public class RaidStateTracker
 
 	private final Client client;
 	private final EventBus eventBus;
+	private final RaidCompletionTracker raidCompletionTracker;
 
 	@Getter
 	private volatile RaidState currentState = DEFAULT_STATE;
@@ -66,11 +81,14 @@ public class RaidStateTracker
 	// delay changes to inRaid to give time for raidMemberNames to update
 	private boolean debouncedInRaid = false;
 	private int debounceTicks = 0;
+	private int phase;
+	private int ocellusQuadrantDestructs;
 
 	@Override
 	public void startUp()
 	{
 		rebuildRaidMemberNames();
+		phase = PHASE_UNSTARTED;
 	}
 
 	@Subscribe(priority = 5)
@@ -81,8 +99,8 @@ public class RaidStateTracker
 
 		Widget w = client.getWidget(InterfaceID.TfaHud.UNIVERSE);
 
-		RaidRoom currentRoom = RaidRoom.forRegionId(region);
-		boolean inRaidRaw = currentRoom != null || (w != null && !w.isHidden());
+		RaidRoom room = RaidRoom.forRegionId(region);
+		boolean inRaidRaw = room != null || (w != null && !w.isHidden());
 
 		if (inRaidRaw == debouncedInRaid)
 		{
@@ -106,11 +124,32 @@ public class RaidStateTracker
 
 		boolean practice = false; // todo
 
+		if (room != null && currentState.getCurrentRoom() != room)
+		{
+			// don't use updatePhase in here, it would duplicate the event
+			switch (room)
+			{
+				case ARCHIVE_GUARDIAN:
+					phase = raidCompletionTracker.getCompletedCount();
+					break;
+
+				case OCELLUS:
+					ocellusQuadrantDestructs = 0;
+					phase = PHASE_UNSTARTED;
+					break;
+
+				default:
+					phase = PHASE_UNSTARTED;
+					break;
+			}
+		}
+
 		setRaidState(
 			RaidState.builder()
 				.inLobby(region == REGION_LOBBY)
 				.inRaid(debouncedInRaid)
-				.currentRoom(currentRoom)
+				.currentRoom(room)
+				.phase(phase)
 				.playerCount(countPlayers())
 				.spectator(spectator)
 				.practice(practice)
@@ -135,6 +174,72 @@ public class RaidStateTracker
 		rebuildRaidMemberNames();
 	}
 
+	@Subscribe
+	public void onGameStateChanged(GameStateChanged e)
+	{
+		switch (e.getGameState())
+		{
+			case LOGGING_IN:
+			case HOPPING:
+				debouncedInRaid = false;
+				debounceTicks = 0;
+				ocellusQuadrantDestructs = 0;
+				phase = PHASE_UNSTARTED;
+				setRaidState(DEFAULT_STATE, true);
+		}
+	}
+
+	@Subscribe
+	public void onChatMessage(ChatMessage e)
+	{
+		if (e.getType() != ChatMessageType.GAMEMESSAGE)
+		{
+			return;
+		}
+
+		String message = Text.removeTags(e.getMessage());
+		if (message.startsWith(MESSAGE_ROOM_STARTED))
+		{
+			updatePhase(1);
+		}
+		else if (message.startsWith(MESSAGE_ROOM_FINISHED))
+		{
+			updatePhase(PHASE_COMPLETED);
+		}
+	}
+
+	@Subscribe
+	public void onNpcChanged(NpcChanged e)
+	{
+		if (e.getNpc().getId() == NpcID.TFA_OCELLUS_P2)
+		{
+			updatePhase(2);
+		}
+		else if (e.getNpc().getId() == NpcID.TFA_OCELLUS_P3)
+		{
+			updatePhase(3);
+		}
+	}
+
+	@Subscribe
+	public void onAnimationChanged(AnimationChanged e)
+	{
+		if (!(e.getActor() instanceof NPC) ||
+			((NPC) e.getActor()).getId() != NpcID.TFA_OCELLUS_P3)
+		{
+			return;
+		}
+
+		if (e.getActor().getAnimation() == AnimationID.NPC_OCELLUS_QUADRANT_DESTROY_IN)
+		{
+			ocellusQuadrantDestructs++;
+			if (ocellusQuadrantDestructs == 3)
+			{
+				updatePhase(4);
+			}
+		}
+	}
+
 	private void rebuildRaidMemberNames()
 	{
 		ImmutableSet.Builder<String> names = ImmutableSet.builder();
@@ -151,19 +256,6 @@ public class RaidStateTracker
 		}
 
 		raidMemberNames = names.build();
-	}
-
-	@Subscribe
-	public void onGameStateChanged(GameStateChanged e)
-	{
-		switch (e.getGameState())
-		{
-			case LOGGING_IN:
-			case HOPPING:
-				debouncedInRaid = false;
-				debounceTicks = 0;
-				setRaidState(DEFAULT_STATE, true);
-		}
 	}
 
 	private void setRaidState(RaidState newValue, boolean forceEvent)
@@ -187,5 +279,20 @@ public class RaidStateTracker
 			(client.getVarbitValue(VarbitID.TFA_CLIENT_P5) != 0 ? 1 : 0) +
 			(client.getVarbitValue(VarbitID.TFA_CLIENT_P6) != 0 ? 1 : 0) +
 			(client.getVarbitValue(VarbitID.TFA_CLIENT_P7) != 0 ? 1 : 0);
+	}
+
+	private void updatePhase(int phase)
+	{
+		// thin wrapper around phase-setter + event emit.
+		// used to avoid waiting for a new GameTick to publish a phase event,
+		// since event ordering matters in PointsTracker.
+		this.phase = phase;
+		if (currentState.getPhase() != phase)
+		{
+			setRaidState(
+				currentState.withPhase(phase),
+				false
+			);
+		}
 	}
 }

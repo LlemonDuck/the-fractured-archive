@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.util.Text;
 
 @Slf4j
 @Singleton
@@ -21,6 +22,12 @@ public class RaidCompletionTracker
 
 	private final Set<String> completedBosses = new HashSet<>();
 
+	@Override
+	public void startUp()
+	{
+		completedBosses.clear();
+	}
+
 	@Subscribe(priority = Float.MAX_VALUE)
 	public void onChatMessage(ChatMessage e)
 	{
@@ -29,10 +36,10 @@ public class RaidCompletionTracker
 			return;
 		}
 
-		if (e.getMessage().startsWith("Challenge complete: "))
+		String message = Text.removeTags(e.getMessage());
+		if (message.startsWith("Challenge complete: "))
 		{
-			String bossName = e.getMessage()
-				.substring("Challenge complete: ".length(), e.getMessage().indexOf('.'));
+			String bossName = message.substring("Challenge complete: ".length(), message.indexOf('.'));
 			completedBosses.add(bossName);
 		}
 	}
@@ -49,6 +56,11 @@ public class RaidCompletionTracker
 	public Set<String> getCompletedBosses()
 	{
 		return Collections.unmodifiableSet(completedBosses);
+	}
+
+	public int getCompletedCount()
+	{
+		return completedBosses.size();
 	}
 
 }

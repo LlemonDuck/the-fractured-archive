@@ -3,6 +3,7 @@ package com.duckblade.osrs.tfa.features.pointstracker;
 import com.duckblade.osrs.tfa.TfaConfig;
 import com.duckblade.osrs.tfa.util.RaidRoom;
 import com.duckblade.osrs.tfa.util.RaidState;
+import com.duckblade.osrs.tfa.util.RaidStateChanged;
 import com.duckblade.osrs.tfa.util.RaidStateTracker;
 import java.util.HashMap;
 import java.util.Map;
@@ -92,9 +93,30 @@ class PointsTrackerTest
 		tracker.onChatMessage(new ChatMessage(null, ChatMessageType.GAMEMESSAGE, "", rawMessage, "", 0));
 	}
 
+	private static RaidState stateAt(RaidRoom room, int phase)
+	{
+		return RaidState.builder()
+			.inLobby(false)
+			.inRaid(true)
+			.currentRoom(room)
+			.phase(phase)
+			.playerCount(2)
+			.spectator(false)
+			.practice(false)
+			.build();
+	}
+
+	// what RaidStateTracker emits when the given phase of the room ends
+	private void phaseCompleted(RaidRoom room, int phase)
+	{
+		int next = room == RaidRoom.OCELLUS && phase < 4 ? phase + 1 : RaidStateTracker.PHASE_COMPLETED;
+		tracker.onRaidStateChanged(new RaidStateChanged(stateAt(room, phase), stateAt(room, next)));
+	}
+
+	// single-phase rooms run phase 1 (started) until "Challenge complete"
 	private void challengeComplete()
 	{
-		tracker.onChatMessage(new ChatMessage(null, ChatMessageType.GAMEMESSAGE, "", "Challenge complete: Ezekiel.", "", 0));
+		phaseCompleted(RaidRoom.EZEKIEL, 1);
 	}
 
 	private void hit(boolean mine, int amount)
@@ -142,7 +164,7 @@ class PointsTrackerTest
 
 		Map<String, Integer> reports = new HashMap<>();
 		reports.put("Alice", 12);
-		when(partyDamageTracker.getDamageByName(RaidRoom.EZEKIEL, 0)).thenReturn(reports);
+		when(partyDamageTracker.getDamageByName(RaidRoom.EZEKIEL, 1)).thenReturn(reports);
 
 		hit(true, 12);
 		challengeComplete(); // starts pending: incomplete (Bob hasn't reported), doesn't resolve yet
@@ -168,7 +190,7 @@ class PointsTrackerTest
 
 		Map<String, Integer> reports = new HashMap<>();
 		reports.put("Alice", 12);
-		when(partyDamageTracker.getDamageByName(RaidRoom.EZEKIEL, 0)).thenReturn(reports);
+		when(partyDamageTracker.getDamageByName(RaidRoom.EZEKIEL, 1)).thenReturn(reports);
 
 		hit(true, 12);
 		challengeComplete(); // pending, incomplete
@@ -196,7 +218,7 @@ class PointsTrackerTest
 		when(partyDamageTracker.getDamageByName(RaidRoom.OCELLUS, 4)).thenReturn(reports);
 
 		hit(true, 10);
-		tracker.onChatMessage(new ChatMessage(null, ChatMessageType.GAMEMESSAGE, "", "Challenge complete: Ocellus.", "", 0));
+		phaseCompleted(RaidRoom.OCELLUS, 4);
 		// pending, incomplete (Bob hasn't reported) -> this death must defer behind the award
 		died("You have died. Total deaths: 1.");
 
@@ -222,7 +244,7 @@ class PointsTrackerTest
 	{
 		start(2, RaidRoom.EZEKIEL);
 		when(partyService.isInParty()).thenReturn(true);
-		when(partyDamageTracker.getDamageByName(RaidRoom.EZEKIEL, 0)).thenReturn(Map.of("Alice", 12));
+		when(partyDamageTracker.getDamageByName(RaidRoom.EZEKIEL, 1)).thenReturn(Map.of("Alice", 12));
 
 		hit(true, 12);
 		challengeComplete(); // pending, incomplete
@@ -251,7 +273,7 @@ class PointsTrackerTest
 	{
 		start(2, RaidRoom.EZEKIEL);
 		when(partyService.isInParty()).thenReturn(true);
-		when(partyDamageTracker.getDamageByName(RaidRoom.EZEKIEL, 0)).thenReturn(Map.of("Alice", 0, "Bob", 100));
+		when(partyDamageTracker.getDamageByName(RaidRoom.EZEKIEL, 1)).thenReturn(Map.of("Alice", 0, "Bob", 100));
 
 		died("<col=ff0000>Bob</col> has died. Total deaths: 1.");
 
@@ -269,6 +291,54 @@ class PointsTrackerTest
 		assertEquals(0, tracker.getPersonalPoints());
 		assertEquals(0, tracker.getTeamPoints());
 		verify(eventBus, never()).post(org.mockito.ArgumentMatchers.any(PluginMessage.class));
+	}
+
+	// --- completion is driven by RaidStateChanged, not chat ---
+
+	@Test
+	void challengeCompleteChatMessageAloneAwardsNothing()
+	{
+		start(1, RaidRoom.EZEKIEL);
+
+		tracker.onChatMessage(new ChatMessage(null, ChatMessageType.GAMEMESSAGE, "", "Challenge complete: Ezekiel.", "", 0));
+
+		assertEquals(0, tracker.getPersonalPoints());
+		assertEquals(0, tracker.getTeamPoints());
+	}
+
+	@Test
+	void stateChangesThatAreNotACompletedPhaseAwardNothing()
+	{
+		start(1, RaidRoom.EZEKIEL);
+
+		// challenge started
+		tracker.onRaidStateChanged(new RaidStateChanged(stateAt(RaidRoom.EZEKIEL, 0), stateAt(RaidRoom.EZEKIEL, 1)));
+		// walked on to the next room after finishing the last one
+		tracker.onRaidStateChanged(new RaidStateChanged(stateAt(RaidRoom.EZEKIEL, 5), stateAt(RaidRoom.BORK, 0)));
+		// leaving the raid
+		tracker.onRaidStateChanged(new RaidStateChanged(stateAt(RaidRoom.BORK, 1), RaidState.builder().build()));
+
+		assertEquals(0, tracker.getPersonalPoints());
+		assertEquals(0, tracker.getTeamPoints());
+	}
+
+	@Test
+	void soloOcellusAwardsEachPhaseAndOnlyFinishesTheRaidAfterPhaseFour()
+	{
+		when(config.pointsTrackerAllowExternal()).thenReturn(true);
+		start(1, RaidRoom.OCELLUS);
+
+		phaseCompleted(RaidRoom.OCELLUS, 1);
+		assertEquals(60, tracker.getPersonalPoints());
+		phaseCompleted(RaidRoom.OCELLUS, 2);
+		assertEquals(90, tracker.getPersonalPoints());
+		phaseCompleted(RaidRoom.OCELLUS, 3);
+		assertEquals(248, tracker.getPersonalPoints());
+		verify(eventBus, never()).post(org.mockito.ArgumentMatchers.any(PluginMessage.class));
+
+		phaseCompleted(RaidRoom.OCELLUS, 4);
+		assertEquals(300, tracker.getPersonalPoints());
+		verify(eventBus).post(org.mockito.ArgumentMatchers.any(PluginMessage.class));
 	}
 
 }
