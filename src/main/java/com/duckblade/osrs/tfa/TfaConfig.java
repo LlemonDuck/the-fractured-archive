@@ -157,6 +157,18 @@ public interface TfaConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+		keyName = "lobbyMuteAmbientNoise",
+		name = "Mute Lobby Ambience",
+		description = "Mutes the looping ambient sounds in the raid lobby.",
+		section = SECTION_LOBBY,
+		position = 3
+	)
+	default boolean lobbyMuteAmbientNoise()
+	{
+		return false;
+	}
+
 	// Resupply
 	@ConfigItem(
 		keyName = "resupplyBuyMenuSwap",

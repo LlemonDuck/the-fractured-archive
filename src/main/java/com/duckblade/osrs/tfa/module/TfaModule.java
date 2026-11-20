@@ -5,6 +5,7 @@ import com.duckblade.osrs.tfa.features.FadeDisabler;
 import com.duckblade.osrs.tfa.features.LobbyBoardHighlighter;
 import com.duckblade.osrs.tfa.features.QuickProceedSwaps;
 import com.duckblade.osrs.tfa.features.hporbs.HealthBarsOverlay;
+import com.duckblade.osrs.tfa.features.lobby.AmbientNoiseMuter;
 import com.duckblade.osrs.tfa.features.lobby.ClaimYourLoot;
 import com.duckblade.osrs.tfa.features.lobby.SpellbookWarning;
 import com.duckblade.osrs.tfa.features.loot.LootChestHighlight;
@@ -43,6 +44,7 @@ public class TfaModule extends AbstractModule
 
 	@Provides
 	Set<PluginLifecycleComponent> lifecycleComponents(
+		AmbientNoiseMuter ambientNoiseMuter,
 		BuyMenuSwapper buyMenuSwapper,
 		ClaimYourLoot claimYourLoot,
 		FadeDisabler fadeDisabler,
@@ -67,6 +69,7 @@ public class TfaModule extends AbstractModule
 	)
 	{
 		return ImmutableSet.of(
+			ambientNoiseMuter,
 			buyMenuSwapper,
 			claimYourLoot,
 			fadeDisabler,
