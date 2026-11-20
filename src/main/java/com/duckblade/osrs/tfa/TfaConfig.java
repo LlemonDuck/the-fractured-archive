@@ -116,7 +116,7 @@ public interface TfaConfig extends Config
 	)
 	default boolean quickProceedEnable()
 	{
-		return true;
+		return false;
 	}
 
 	// Lobby
