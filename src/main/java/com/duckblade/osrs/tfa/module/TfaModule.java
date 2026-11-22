@@ -10,6 +10,7 @@ import com.duckblade.osrs.tfa.features.lobby.ClaimYourLoot;
 import com.duckblade.osrs.tfa.features.lobby.SpellbookWarning;
 import com.duckblade.osrs.tfa.features.loot.LootChestHighlight;
 import com.duckblade.osrs.tfa.features.loot.LootLeftClickBankAll;
+import com.duckblade.osrs.tfa.features.moia.RemoveMoiaWalkSceneryTiles;
 import com.duckblade.osrs.tfa.features.pointstracker.PartyDamageTracker;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsOverlay;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsTracker;
@@ -41,7 +42,6 @@ public class TfaModule extends AbstractModule
 		bind(ComponentManager.class);
 	}
 
-
 	@Provides
 	Set<PluginLifecycleComponent> lifecycleComponents(
 		AmbientNoiseMuter ambientNoiseMuter,
@@ -59,6 +59,7 @@ public class TfaModule extends AbstractModule
 		RaidCompletionTracker raidCompletionTracker,
 		RaidFolder raidFolder,
 		RaidStateTracker raidStateTracker,
+		RemoveMoiaWalkSceneryTiles removeMoiaWalkSceneryTiles,
 		SpellbookWarning spellbookWarning,
 		TimeTracker timeTracker,
 		TimeTrackerChatMessage timeTrackerChatMessage,
@@ -84,6 +85,7 @@ public class TfaModule extends AbstractModule
 			raidCompletionTracker,
 			raidFolder,
 			raidStateTracker,
+			removeMoiaWalkSceneryTiles,
 			spellbookWarning,
 			timeTracker,
 			timeTrackerChatMessage,

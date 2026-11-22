@@ -46,9 +46,17 @@ public interface TfaConfig extends Config
 	String SECTION_RESUPPLY = "sectionResupply";
 
 	@ConfigSection(
+		name = "Moia",
+		description = "Options for the Moia fight.",
+		position = 3,
+		closedByDefault = true
+	)
+	String SECTION_MOIA = "sectionMoia";
+
+	@ConfigSection(
 		name = "Loot",
 		description = "Options for the loot room.",
-		position = 3,
+		position = 4,
 		closedByDefault = true
 	)
 	String SECTION_LOOT = "sectionLoot";
@@ -56,7 +64,7 @@ public interface TfaConfig extends Config
 	@ConfigSection(
 		name = "Points Tracker",
 		description = "Options for the points tracker.",
-		position = 4,
+		position = 5,
 		closedByDefault = true
 	)
 	String SECTION_POINTS_TRACKER = "pointsTracker";
@@ -64,7 +72,7 @@ public interface TfaConfig extends Config
 	@ConfigSection(
 		name = "Time Tracker",
 		description = "Options for the room time tracker.",
-		position = 5,
+		position = 6,
 		closedByDefault = true
 	)
 	String SECTION_TIME_TRACKER = "timeTracker";
@@ -180,6 +188,20 @@ public interface TfaConfig extends Config
 	default boolean resupplyBuyMenuSwap()
 	{
 		return true;
+	}
+
+	// Moia
+
+	@ConfigItem(
+		keyName = "moiaRemoveWalkSceneryTiles",
+		name = "Remove Walk Here",
+		description = "Removes 'Walk here' and object 'Examine' options outside the walkable area while you are inside the Moia arena.",
+		position = 0,
+		section = SECTION_MOIA
+	)
+	default boolean moiaRemoveWalkSceneryTiles()
+	{
+		return false;
 	}
 
 	// Loot
