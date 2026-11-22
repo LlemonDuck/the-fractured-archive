@@ -4,6 +4,7 @@ import com.duckblade.osrs.tfa.TfaConfig;
 import com.duckblade.osrs.tfa.features.FadeDisabler;
 import com.duckblade.osrs.tfa.features.LobbyBoardHighlighter;
 import com.duckblade.osrs.tfa.features.QuickProceedSwaps;
+import com.duckblade.osrs.tfa.features.ezekiel.SwordHealthBarRecolour;
 import com.duckblade.osrs.tfa.features.hporbs.HealthBarsOverlay;
 import com.duckblade.osrs.tfa.features.lobby.AmbientNoiseMuter;
 import com.duckblade.osrs.tfa.features.lobby.ClaimYourLoot;
@@ -61,6 +62,7 @@ public class TfaModule extends AbstractModule
 		RaidStateTracker raidStateTracker,
 		RemoveMoiaWalkSceneryTiles removeMoiaWalkSceneryTiles,
 		SpellbookWarning spellbookWarning,
+		SwordHealthBarRecolour swordHealthBarRecolour,
 		TimeTracker timeTracker,
 		TimeTrackerChatMessage timeTrackerChatMessage,
 		TimeTrackerFileDump timeTrackerFileDump,
@@ -87,6 +89,7 @@ public class TfaModule extends AbstractModule
 			raidStateTracker,
 			removeMoiaWalkSceneryTiles,
 			spellbookWarning,
+			swordHealthBarRecolour,
 			timeTracker,
 			timeTrackerChatMessage,
 			timeTrackerFileDump,

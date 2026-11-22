@@ -46,9 +46,17 @@ public interface TfaConfig extends Config
 	String SECTION_RESUPPLY = "sectionResupply";
 
 	@ConfigSection(
+		name = "Ezekiel",
+		description = "Options for the Ezekiel fight.",
+		position = 3,
+		closedByDefault = true
+	)
+	String SECTION_EZEKIEL = "sectionEzekiel";
+
+	@ConfigSection(
 		name = "Moia",
 		description = "Options for the Moia fight.",
-		position = 3,
+		position = 4,
 		closedByDefault = true
 	)
 	String SECTION_MOIA = "sectionMoia";
@@ -188,6 +196,32 @@ public interface TfaConfig extends Config
 	default boolean resupplyBuyMenuSwap()
 	{
 		return true;
+	}
+
+	// Ezekiel
+
+	@ConfigItem(
+		keyName = "ezekielSwordHpBarRecolour",
+		name = "Sword HP Bar Recolour",
+		description = "Recolours the health bars of Ezekiel's Animated Swords.",
+		position = 0,
+		section = SECTION_EZEKIEL
+	)
+	default boolean ezekielSwordHpBarRecolour()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "ezekielSwordHpBarColour",
+		name = " ↳ Colour",
+		description = "",
+		position = 1,
+		section = SECTION_EZEKIEL
+	)
+	default Color ezekielSwordHpBarColour()
+	{
+		return Color.CYAN;
 	}
 
 	// Moia
