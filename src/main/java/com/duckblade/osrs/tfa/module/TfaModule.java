@@ -9,6 +9,7 @@ import com.duckblade.osrs.tfa.features.ezekiel.SwordHealthBarRecolour;
 import com.duckblade.osrs.tfa.features.hporbs.HealthBarsOverlay;
 import com.duckblade.osrs.tfa.features.lobby.AmbientNoiseMuter;
 import com.duckblade.osrs.tfa.features.lobby.ClaimYourLoot;
+import com.duckblade.osrs.tfa.features.lobby.EmptyNamesRemover;
 import com.duckblade.osrs.tfa.features.lobby.SpellbookWarning;
 import com.duckblade.osrs.tfa.features.loot.DryStreakTracker;
 import com.duckblade.osrs.tfa.features.loot.LootChestHighlight;
@@ -54,6 +55,7 @@ public class TfaModule extends AbstractModule
 		BuyMenuSwapper buyMenuSwapper,
 		ClaimYourLoot claimYourLoot,
 		DryStreakTracker dryStreakTracker,
+		EmptyNamesRemover emptyNamesRemover,
 		FadeDisabler fadeDisabler,
 		HealthBarsOverlay healthBarsOverlay,
 		LobbyBoardHighlighter lobbyBoardHighlighter,
@@ -84,6 +86,7 @@ public class TfaModule extends AbstractModule
 			buyMenuSwapper,
 			claimYourLoot,
 			dryStreakTracker,
+			emptyNamesRemover,
 			fadeDisabler,
 			healthBarsOverlay,
 			lobbyBoardHighlighter,

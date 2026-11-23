@@ -209,6 +209,18 @@ public interface TfaConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+		keyName = "lobbyHideEmptyNames",
+		name = "Hide Empty Party Slots",
+		description = "Removes the empty '-' slots from the party list in the raid lobby, shrinking the panel to fit.",
+		section = SECTION_LOBBY,
+		position = 4
+	)
+	default boolean lobbyHideEmptyNames()
+	{
+		return true;
+	}
+
 	// Resupply
 	@ConfigItem(
 		keyName = "resupplyBuyMenuSwap",
