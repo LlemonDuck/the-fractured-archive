@@ -303,6 +303,30 @@ public interface TfaConfig extends Config
 		return new Color(128, 0, 64, 128);
 	}
 
+	@ConfigItem(
+		keyName = "teamDryStreakTrackerEnabled",
+		name = "Team Dry Streak",
+		description = "Shows the number of raids since your team last received a purple, in chat when you enter the loot room.",
+		position = 6,
+		section = SECTION_LOOT
+	)
+	default boolean teamDryStreakTrackerEnabled()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "personalDryStreakTrackerEnabled",
+		name = "Personal Dry Streak",
+		description = "Shows the number of raids since you last received a purple, in chat when you enter the loot room.",
+		position = 7,
+		section = SECTION_LOOT
+	)
+	default boolean personalDryStreakTrackerEnabled()
+	{
+		return false;
+	}
+
 	// points tracker
 
 	@ConfigItem(
@@ -465,4 +489,42 @@ public interface TfaConfig extends Config
 		hidden = true
 	)
 	void updateNotifierLastVersion(int newVersion);
+
+	@ConfigItem(
+		keyName = "teamDryStreakCount",
+		name = "",
+		description = "",
+		hidden = true
+	)
+	default int teamDryStreakCount()
+	{
+		return 0;
+	}
+
+	@ConfigItem(
+		keyName = "teamDryStreakCount",
+		name = "",
+		description = "",
+		hidden = true
+	)
+	void teamDryStreakCount(int count);
+
+	@ConfigItem(
+		keyName = "personalDryStreakCount",
+		name = "",
+		description = "",
+		hidden = true
+	)
+	default int personalDryStreakCount()
+	{
+		return 0;
+	}
+
+	@ConfigItem(
+		keyName = "personalDryStreakCount",
+		name = "",
+		description = "",
+		hidden = true
+	)
+	void personalDryStreakCount(int count);
 }

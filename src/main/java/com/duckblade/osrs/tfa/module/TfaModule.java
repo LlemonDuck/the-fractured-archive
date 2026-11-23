@@ -9,6 +9,7 @@ import com.duckblade.osrs.tfa.features.hporbs.HealthBarsOverlay;
 import com.duckblade.osrs.tfa.features.lobby.AmbientNoiseMuter;
 import com.duckblade.osrs.tfa.features.lobby.ClaimYourLoot;
 import com.duckblade.osrs.tfa.features.lobby.SpellbookWarning;
+import com.duckblade.osrs.tfa.features.loot.DryStreakTracker;
 import com.duckblade.osrs.tfa.features.loot.LootChestHighlight;
 import com.duckblade.osrs.tfa.features.loot.LootLeftClickBankAll;
 import com.duckblade.osrs.tfa.features.moia.RemoveMoiaWalkSceneryTiles;
@@ -48,6 +49,7 @@ public class TfaModule extends AbstractModule
 		AmbientNoiseMuter ambientNoiseMuter,
 		BuyMenuSwapper buyMenuSwapper,
 		ClaimYourLoot claimYourLoot,
+		DryStreakTracker dryStreakTracker,
 		FadeDisabler fadeDisabler,
 		HealthBarsOverlay healthBarsOverlay,
 		LobbyBoardHighlighter lobbyBoardHighlighter,
@@ -75,6 +77,7 @@ public class TfaModule extends AbstractModule
 			ambientNoiseMuter,
 			buyMenuSwapper,
 			claimYourLoot,
+			dryStreakTracker,
 			fadeDisabler,
 			healthBarsOverlay,
 			lobbyBoardHighlighter,
