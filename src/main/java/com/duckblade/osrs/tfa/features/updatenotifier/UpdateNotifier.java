@@ -20,7 +20,7 @@ public class UpdateNotifier
 	implements PluginLifecycleComponent
 {
 
-	public static final int TARGET_VERSION = 5;
+	public static final int TARGET_VERSION = 6;
 	private static final BufferedImage PANEL_ICON = ImageUtil.loadImageResource(UpdateNotifier.class, "icon.png");
 
 	private final ClientToolbar clientToolbar;
@@ -84,12 +84,26 @@ public class UpdateNotifier
 				updates.add("<strong>(Removed Loot -> Prevent Early Sparkle) Jagex has implemented this themselves.");
 
 			case 3:
-				updates.add("<string>(Loot -> Loot Chest Highlight) Added a chest highlight to help quickly identify your loot chest.");
-				updates.add("<string>(Lobby -> Loot Reminder) A reminder to claim your loot if you did not claim it in the raid.");
-				updates.add("<string>(Lobby -> Spellbook Warning) Displays your current spellbook on the raid entrance.");
+				updates.add("<strong>(Loot -> Loot Chest Highlight)</strong> Added a chest highlight to help quickly identify your loot chest.");
+				updates.add("<strong>(Lobby -> Loot Reminder)</strong> A reminder to claim your loot if you did not claim it in the raid.");
+				updates.add("<strong>(Lobby -> Spellbook Warning)</strong> Displays your current spellbook on the raid entrance.");
 
 			case 4:
-				updates.add("<string>Points Tracker</strong> Now uses the RL Party system to get more accurate counts. <em>ALL</em> players must be in party with the TFA plugin or else you will get very inaccurate estimates.");
+				updates.add("<strong>Points Tracker</strong> Now uses the RL Party system to get more accurate counts. <em>ALL</em> players must be in party with the TFA plugin or else you will get very inaccurate estimates.");
+
+			case 5:
+				updates.add("It's now been one month since TFA was released, so here's a huge new content release!");
+				updates.add("<strong>(Miscellaneous -> Quick Proceed)</strong> Left-click proceed and quick-enter entryways.");
+				updates.add("<strong>(Lobby -> Mute Lobby Ambience)</strong> Mute the lobby ghost noises.");
+				updates.add("<strong>(Lobby -> Hide Empty Party Slots)</strong> Condense the lobby player list to remove blank lines.");
+				updates.add("<strong>(Ezekiel, Dreadnoth, Xarth, Ocellus -> Autocast Warning)</strong> Highlights the entryway if your autocast is wrong for the fight.");
+				updates.add("<strong>(Ezekiel -> Sword HP Bar Recolour)</strong> Recolours the Animated Swords' health bars.");
+				updates.add("<strong>(Moia -> Remove Walk Here)</strong> Removes 'Walk here' and 'Examine' menu entries outside the walkable area.");
+				updates.add("<strong>(Resupply -> Buy Menu-Swap)</strong> Left-click to buy from the Quartermaster.");
+				updates.add("<strong>(Resupply -> Quartermaster Reminder)</strong> Warns you to visit the Quartermaster before Dagon'hai and Xarth.");
+				updates.add("<strong>(Ocellus -> Start Quadrant Highlight)</strong> Highlights the starting quadrant opposite your chosen censer.");
+				updates.add("<strong>(Loot -> Dry Streak)</strong> Shows raids since your last purple, for you and your team.");
+				updates.add("<strong>(Time Tracker)</strong> Track room and raid times with an overlay, infoboxes, chat message, or a splits file.");
 		}
 
 		return updates;
