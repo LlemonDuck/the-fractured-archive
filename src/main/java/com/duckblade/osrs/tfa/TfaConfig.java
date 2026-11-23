@@ -200,7 +200,7 @@ public interface TfaConfig extends Config
 
 	@ConfigItem(
 		keyName = "lobbyMuteAmbientNoise",
-		name = "Mute Lobby Ambience",
+		name = "Mute Ambience",
 		description = "Mutes the looping ambient sounds in the raid lobby.",
 		section = SECTION_LOBBY,
 		position = 3
