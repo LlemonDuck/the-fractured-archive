@@ -15,6 +15,7 @@ import com.duckblade.osrs.tfa.features.loot.DryStreakTracker;
 import com.duckblade.osrs.tfa.features.loot.LootChestHighlight;
 import com.duckblade.osrs.tfa.features.loot.LootLeftClickBankAll;
 import com.duckblade.osrs.tfa.features.moia.RemoveMoiaWalkSceneryTiles;
+import com.duckblade.osrs.tfa.features.ocellus.OcellusStartQuadrant;
 import com.duckblade.osrs.tfa.features.pointstracker.PartyDamageTracker;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsOverlay;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsTracker;
@@ -61,6 +62,7 @@ public class TfaModule extends AbstractModule
 		LobbyBoardHighlighter lobbyBoardHighlighter,
 		LootChestHighlight lootChestHighlight,
 		LootLeftClickBankAll lootLeftClickBankAll,
+		OcellusStartQuadrant ocellusStartQuadrant,
 		PartyDamageTracker partyDamageTracker,
 		PointsOverlay pointsOverlay,
 		PointsTracker pointsTracker,
@@ -92,6 +94,7 @@ public class TfaModule extends AbstractModule
 			lobbyBoardHighlighter,
 			lootChestHighlight,
 			lootLeftClickBankAll,
+			ocellusStartQuadrant,
 			partyDamageTracker,
 			pointsOverlay,
 			pointsTracker,

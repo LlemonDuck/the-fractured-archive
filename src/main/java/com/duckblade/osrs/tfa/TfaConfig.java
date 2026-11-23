@@ -1,6 +1,7 @@
 package com.duckblade.osrs.tfa;
 
 import com.duckblade.osrs.tfa.features.hporbs.HpOrbMode;
+import com.duckblade.osrs.tfa.features.ocellus.OcellusCenser;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsTrackerOverlayEnableMode;
 import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerFileMode;
 import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerOverlayMode;
@@ -329,6 +330,56 @@ public interface TfaConfig extends Config
 	default boolean ocellusAutocastWarning()
 	{
 		return false;
+	}
+
+	@ConfigItem(
+		keyName = "ocellusStartQuadrant",
+		name = "Start Quadrant Highlight",
+		description = "Highlights the quadrant opposite the chosen censer before beginning the fight with Ocellus.",
+		position = 1,
+		section = SECTION_OCELLUS
+	)
+	default boolean ocellusStartQuadrant()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "ocellusStartQuadrantCenser",
+		name = " ↳ Opposite Censer",
+		description = "The censer whose opposite quadrant is highlighted.",
+		position = 2,
+		section = SECTION_OCELLUS
+	)
+	default OcellusCenser ocellusStartQuadrantCenser()
+	{
+		return OcellusCenser.BANDOS;
+	}
+
+	@ConfigItem(
+		keyName = "ocellusStartQuadrantStroke",
+		name = " ↳ Stroke Colour",
+		description = "",
+		position = 3,
+		section = SECTION_OCELLUS
+	)
+	@Alpha
+	default Color ocellusStartQuadrantStroke()
+	{
+		return new Color(0, 0, 0, 0);
+	}
+
+	@ConfigItem(
+		keyName = "ocellusStartQuadrantFill",
+		name = " ↳ Fill Colour",
+		description = "",
+		position = 4,
+		section = SECTION_OCELLUS
+	)
+	@Alpha
+	default Color ocellusStartQuadrantFill()
+	{
+		return new Color(255, 255, 255, 64);
 	}
 
 	// Loot
