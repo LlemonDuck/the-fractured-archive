@@ -3,6 +3,7 @@ package com.duckblade.osrs.tfa.features.autocast;
 import com.duckblade.osrs.tfa.TfaConfig;
 import com.duckblade.osrs.tfa.module.PluginLifecycleComponent;
 import com.duckblade.osrs.tfa.util.AutocastTracker;
+import com.duckblade.osrs.tfa.util.RaidDoorTracker;
 import com.duckblade.osrs.tfa.util.RaidRoom;
 import com.duckblade.osrs.tfa.util.RaidState;
 import com.duckblade.osrs.tfa.util.Spell;
@@ -12,20 +13,14 @@ import com.google.common.collect.Sets;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
-import net.runelite.api.ObjectComposition;
 import net.runelite.api.Point;
-import net.runelite.api.events.GameObjectDespawned;
-import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.gameval.VarbitID;
-import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
@@ -49,20 +44,22 @@ public class AutocastWarning
 
 	private final Client client;
 	private final AutocastTracker autocastTracker;
+	private final RaidDoorTracker raidDoorTracker;
 	private final ModelOutlineRenderer modelOutlineRenderer;
 
-	private final Map<Entryway, GameObject> entryways = new EnumMap<>(Entryway.class);
 	private volatile Set<Entryway> enabledEntryways = ImmutableSet.of();
 
 	@Inject
 	public AutocastWarning(
 		Client client,
 		AutocastTracker autocastTracker,
+		RaidDoorTracker raidDoorTracker,
 		ModelOutlineRenderer modelOutlineRenderer
 	)
 	{
 		this.client = client;
 		this.autocastTracker = autocastTracker;
+		this.raidDoorTracker = raidDoorTracker;
 		this.modelOutlineRenderer = modelOutlineRenderer;
 
 		setPosition(OverlayPosition.DYNAMIC);
@@ -89,20 +86,13 @@ public class AutocastWarning
 	}
 
 	@Override
-	public void shutDown()
-	{
-		entryways.clear();
-	}
-
-	@Override
 	public Dimension render(Graphics2D graphics)
 	{
 		graphics.setFont(FontManager.getRunescapeBoldFont());
-		for (Map.Entry<Entryway, GameObject> entry : entryways.entrySet())
+		for (Entryway entryway : enabledEntryways)
 		{
-			Entryway entryway = entry.getKey();
-			GameObject object = entry.getValue();
-			if (!enabledEntryways.contains(entryway) || !hasWrongSpellSelected(entryway))
+			GameObject object = raidDoorTracker.getDoor(entryway.getDoor());
+			if (object == null || !hasWrongSpellSelected(entryway))
 			{
 				continue;
 			}
@@ -121,50 +111,6 @@ public class AutocastWarning
 		}
 
 		return null;
-	}
-
-	@Subscribe
-	public void onGameObjectSpawned(GameObjectSpawned e)
-	{
-		GameObject object = e.getGameObject();
-		for (Entryway entryway : Entryway.values())
-		{
-			if (matches(entryway, object))
-			{
-				entryways.put(entryway, object);
-				return;
-			}
-		}
-	}
-
-	@Subscribe
-	public void onGameObjectDespawned(GameObjectDespawned e)
-	{
-		entryways.values().remove(e.getGameObject());
-	}
-
-	private boolean matches(Entryway entryway, GameObject object)
-	{
-		if (entryway.getObjectIds().contains(object.getId()))
-		{
-			return true;
-		}
-
-		ObjectComposition composition = client.getObjectDefinition(object.getId());
-		int[] impostorIds = composition != null ? composition.getImpostorIds() : null;
-		if (impostorIds == null)
-		{
-			return false;
-		}
-
-		for (int impostorId : impostorIds)
-		{
-			if (entryway.getObjectIds().contains(impostorId))
-			{
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private boolean hasWrongSpellSelected(Entryway entryway)

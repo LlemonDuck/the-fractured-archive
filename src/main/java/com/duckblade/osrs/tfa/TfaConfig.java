@@ -39,17 +39,9 @@ public interface TfaConfig extends Config
 	String SECTION_LOBBY = "sectionLobby";
 
 	@ConfigSection(
-		name = "Resupply",
-		description = "Options for the mid-raid resupply.",
-		position = 2,
-		closedByDefault = true
-	)
-	String SECTION_RESUPPLY = "sectionResupply";
-
-	@ConfigSection(
 		name = "Ezekiel",
 		description = "Options for the Ezekiel fight.",
-		position = 3,
+		position = 2,
 		closedByDefault = true
 	)
 	String SECTION_EZEKIEL = "sectionEzekiel";
@@ -57,7 +49,7 @@ public interface TfaConfig extends Config
 	@ConfigSection(
 		name = "Moia",
 		description = "Options for the Moia fight.",
-		position = 4,
+		position = 3,
 		closedByDefault = true
 	)
 	String SECTION_MOIA = "sectionMoia";
@@ -65,10 +57,18 @@ public interface TfaConfig extends Config
 	@ConfigSection(
 		name = "Dreadnoth",
 		description = "Options for the Dreadnoth fight.",
-		position = 5,
+		position = 4,
 		closedByDefault = true
 	)
 	String SECTION_DREADNOTH = "sectionDreadnoth";
+
+	@ConfigSection(
+		name = "Resupply",
+		description = "Options for the mid-raid resupply.",
+		position = 5,
+		closedByDefault = true
+	)
+	String SECTION_RESUPPLY = "sectionResupply";
 
 	@ConfigSection(
 		name = "Xarth",
@@ -222,19 +222,6 @@ public interface TfaConfig extends Config
 		return true;
 	}
 
-	// Resupply
-	@ConfigItem(
-		keyName = "resupplyBuyMenuSwap",
-		name = "Buy Menu-Swap",
-		description = "Deprioritizes 'Select' so you can left-click buy items from the Quartermaster.",
-		section = SECTION_RESUPPLY,
-		position = 0
-	)
-	default boolean resupplyBuyMenuSwap()
-	{
-		return true;
-	}
-
 	// Ezekiel
 
 	@ConfigItem(
@@ -299,6 +286,55 @@ public interface TfaConfig extends Config
 	default boolean dreadnothAutocastWarning()
 	{
 		return false;
+	}
+
+	// Resupply
+	@ConfigItem(
+		keyName = "resupplyBuyMenuSwap",
+		name = "Buy Menu-Swap",
+		description = "Deprioritizes 'Select' so you can left-click buy items from the Quartermaster.",
+		section = SECTION_RESUPPLY,
+		position = 0
+	)
+	default boolean resupplyBuyMenuSwap()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "quartermasterReminder",
+		name = "Quartermaster Reminder",
+		description = "Reminds you to visit the Quartermaster before entering the Dagon'hai or Xarth rooms.",
+		section = SECTION_RESUPPLY,
+		position = 1
+	)
+	default boolean quartermasterReminder()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "quartermasterReminderPreventEntry",
+		name = " ↳ Prevent Room Entry",
+		description = "Deprioritizes Enter/Quick-Enter on the Dagon'hai and Xarth doors until you have visited the Quartermaster.",
+		section = SECTION_RESUPPLY,
+		position = 2
+	)
+	default boolean quartermasterReminderPreventEntry()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "quartermasterReminderOverlay",
+		name = " ↳ Warning Overlay",
+		description = "Highlights the Dagon'hai and Xarth doors in red until you have visited the Quartermaster.",
+		section = SECTION_RESUPPLY,
+		position = 3
+	)
+	default boolean quartermasterReminderOverlay()
+	{
+		return true;
 	}
 
 	// Xarth

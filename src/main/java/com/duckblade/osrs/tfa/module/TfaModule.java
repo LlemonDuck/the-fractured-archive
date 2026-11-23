@@ -20,6 +20,7 @@ import com.duckblade.osrs.tfa.features.pointstracker.PartyDamageTracker;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsOverlay;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsTracker;
 import com.duckblade.osrs.tfa.features.resupply.BuyMenuSwapper;
+import com.duckblade.osrs.tfa.features.resupply.QuartermasterReminder;
 import com.duckblade.osrs.tfa.features.timetracking.TimeTracker;
 import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerChatMessage;
 import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerFileDump;
@@ -28,6 +29,7 @@ import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerOverlay;
 import com.duckblade.osrs.tfa.features.updatenotifier.UpdateNotifier;
 import com.duckblade.osrs.tfa.util.AutocastTracker;
 import com.duckblade.osrs.tfa.util.RaidCompletionTracker;
+import com.duckblade.osrs.tfa.util.RaidDoorTracker;
 import com.duckblade.osrs.tfa.util.RaidFolder;
 import com.duckblade.osrs.tfa.util.RaidStateTracker;
 import com.google.common.collect.ImmutableSet;
@@ -66,8 +68,10 @@ public class TfaModule extends AbstractModule
 		PartyDamageTracker partyDamageTracker,
 		PointsOverlay pointsOverlay,
 		PointsTracker pointsTracker,
+		QuartermasterReminder quartermasterReminder,
 		QuickProceedSwaps quickProceedSwaps,
 		RaidCompletionTracker raidCompletionTracker,
+		RaidDoorTracker raidDoorTracker,
 		RaidFolder raidFolder,
 		RaidStateTracker raidStateTracker,
 		RemoveMoiaWalkSceneryTiles removeMoiaWalkSceneryTiles,
@@ -98,8 +102,10 @@ public class TfaModule extends AbstractModule
 			partyDamageTracker,
 			pointsOverlay,
 			pointsTracker,
+			quartermasterReminder,
 			quickProceedSwaps,
 			raidCompletionTracker,
+			raidDoorTracker,
 			raidFolder,
 			raidStateTracker,
 			removeMoiaWalkSceneryTiles,
