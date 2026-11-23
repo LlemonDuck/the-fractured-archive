@@ -15,7 +15,7 @@ import net.runelite.client.util.Filepath;
 @PluginDescriptor(
 	name = "The Fractured Archive",
 	description = "Utilities and information for raiding The Fractured Archive.",
-	tags = {"tfa", "raid", "4"},
+	tags = {"tfa", "raid", "4", "archive", "guardian", "ezekiel", "bork", "smorks", "moia", "dreadnoth", "quartermaster", "dagon'hai", "dagonhai", "trio", "xarth", "ocellus"},
 	internalName = "the-fractured-archive"
 )
 public class TfaPlugin extends Plugin
