@@ -1,0 +1,99 @@
+package com.duckblade.osrs.tfa.util;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import java.util.Map;
+import java.util.Set;
+import net.runelite.api.Client;
+import net.runelite.api.EnumID;
+import net.runelite.api.ParamID;
+import net.runelite.api.StructComposition;
+import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.VarbitID;
+
+public class StaffUtil
+{
+
+	public static final int SPELLBOOK_STANDARD = 0;
+	public static final int SPELLBOOK_ANCIENT = 1;
+	public static final int SPELLBOOK_ARCEUUS = 3;
+
+	private static final String CASTING_STYLE_NAME = "Casting";
+
+	private static final Map<Integer, Set<Integer>> STAVES_BY_SPELLBOOK = ImmutableMap.of(
+		SPELLBOOK_ANCIENT, ImmutableSet.of(
+			ItemID.STAFF_OF_ZAROS, // Ancient staff
+			ItemID.ANCIENT_SCEPTRE,
+			ItemID.ANCIENT_SCEPTRE_TROUVER,
+			ItemID.ANCIENT_SCEPTRE_BLOOD,
+			ItemID.ANCIENT_SCEPTRE_BLOOD_TROUVER,
+			ItemID.ANCIENT_SCEPTRE_ICE,
+			ItemID.ANCIENT_SCEPTRE_ICE_TROUVER,
+			ItemID.ANCIENT_SCEPTRE_SHADOW,
+			ItemID.ANCIENT_SCEPTRE_SHADOW_TROUVER,
+			ItemID.ANCIENT_SCEPTRE_SMOKE,
+			ItemID.ANCIENT_SCEPTRE_SMOKE_TROUVER,
+			ItemID.FROSTMOON_SPEAR, // Blue Moon spear
+			ItemID.MAGICTRAINING_WAND_MASTER, // Master wand
+			ItemID.KODAI_WAND,
+			ItemID.DRAGONHUNTER_WAND,
+			ItemID.NIGHTMARE_STAFF,
+			ItemID.NIGHTMARE_STAFF_ELDRITCH,
+			ItemID.NIGHTMARE_STAFF_VOLATILE,
+			ItemID.WILD_CAVE_SCEPTRE_CHARGED_RECOL, // Thammaron's sceptre (a), charged
+			ItemID.WILD_CAVE_ACCURSED_CHARGED_RECOL // Accursed sceptre (a), charged
+		),
+		SPELLBOOK_ARCEUUS, ImmutableSet.of(
+			ItemID.BARROWS_AHRIM_WEAPON, // Ahrim's staff, undamaged
+			ItemID.BARROWS_AHRIM_WEAPON_100,
+			ItemID.BARROWS_AHRIM_WEAPON_75,
+			ItemID.BARROWS_AHRIM_WEAPON_50,
+			ItemID.BARROWS_AHRIM_WEAPON_25,
+			ItemID.FROSTMOON_SPEAR, // Blue Moon spear
+			ItemID.KODAI_WAND,
+			ItemID.MAGICTRAINING_WAND_MASTER, // Master wand
+			ItemID.PURGING_STAFF,
+			ItemID.SOS_SKULL_SCEPTRE,
+			ItemID.SOS_SKULL_SCEPTRE_IMBUED,
+			ItemID.SLAYER_STAFF,
+			ItemID.SLAYER_STAFF_ENCHANTED,
+			ItemID.SOTD, // Staff of the Dead
+			ItemID.TOXIC_SOTD, // Toxic staff of the dead, uncharged
+			ItemID.TOXIC_SOTD_CHARGED // Toxic staff of the dead, charged
+		)
+	);
+
+	public static boolean hasStaff(Client client, int spellbook)
+	{
+		if (spellbook == SPELLBOOK_STANDARD)
+		{
+			// way too many of these to list + everything can cast standards
+			return isWieldingAutocastWeapon(client);
+		}
+
+		Set<Integer> staves = STAVES_BY_SPELLBOOK.getOrDefault(spellbook, ImmutableSet.of());
+		return InventoryUtil.containsAny(client.getItemContainer(InventoryID.WORN), staves) ||
+			InventoryUtil.containsAny(client, staves);
+	}
+
+	public static boolean isWieldingAutocastWeapon(Client client)
+	{
+		int weaponCategory = client.getVarbitValue(VarbitID.COMBAT_WEAPON_CATEGORY);
+		int styleEnumId = client.getEnum(EnumID.WEAPON_STYLES).getIntValue(weaponCategory);
+		if (styleEnumId == -1)
+		{
+			return false;
+		}
+
+		int[] styleStructs = client.getEnum(styleEnumId).getIntVals();
+		if (styleStructs.length <= AutocastTracker.COM_MODE_CASTING)
+		{
+			return false;
+		}
+
+		StructComposition castingStyle = client.getStructComposition(styleStructs[AutocastTracker.COM_MODE_CASTING]);
+		return CASTING_STYLE_NAME.equalsIgnoreCase(castingStyle.getStringValue(ParamID.ATTACK_STYLE_NAME));
+	}
+
+}

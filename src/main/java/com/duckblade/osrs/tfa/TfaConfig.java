@@ -62,9 +62,33 @@ public interface TfaConfig extends Config
 	String SECTION_MOIA = "sectionMoia";
 
 	@ConfigSection(
+		name = "Dreadnoth",
+		description = "Options for the Dreadnoth fight.",
+		position = 5,
+		closedByDefault = true
+	)
+	String SECTION_DREADNOTH = "sectionDreadnoth";
+
+	@ConfigSection(
+		name = "Xarth",
+		description = "Options for the Xarth fight.",
+		position = 6,
+		closedByDefault = true
+	)
+	String SECTION_XARTH = "sectionXarth";
+
+	@ConfigSection(
+		name = "Ocellus",
+		description = "Options for the Ocellus fight.",
+		position = 7,
+		closedByDefault = true
+	)
+	String SECTION_OCELLUS = "sectionOcellus";
+
+	@ConfigSection(
 		name = "Loot",
 		description = "Options for the loot room.",
-		position = 4,
+		position = 8,
 		closedByDefault = true
 	)
 	String SECTION_LOOT = "sectionLoot";
@@ -72,7 +96,7 @@ public interface TfaConfig extends Config
 	@ConfigSection(
 		name = "Points Tracker",
 		description = "Options for the points tracker.",
-		position = 5,
+		position = 9,
 		closedByDefault = true
 	)
 	String SECTION_POINTS_TRACKER = "pointsTracker";
@@ -80,7 +104,7 @@ public interface TfaConfig extends Config
 	@ConfigSection(
 		name = "Time Tracker",
 		description = "Options for the room time tracker.",
-		position = 6,
+		position = 10,
 		closedByDefault = true
 	)
 	String SECTION_TIME_TRACKER = "timeTracker";
@@ -201,10 +225,22 @@ public interface TfaConfig extends Config
 	// Ezekiel
 
 	@ConfigItem(
+		keyName = "ezekielAutocastWarning",
+		name = "Autocast Warning",
+		description = "Highlights the Ezekiel entryway in red if you are on the Standard spellbook and your autocast is not a Wind spell.",
+		position = 0,
+		section = SECTION_EZEKIEL
+	)
+	default boolean ezekielAutocastWarning()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "ezekielSwordHpBarRecolour",
 		name = "Sword HP Bar Recolour",
 		description = "Recolours the health bars of Ezekiel's Animated Swords.",
-		position = 0,
+		position = 1,
 		section = SECTION_EZEKIEL
 	)
 	default boolean ezekielSwordHpBarRecolour()
@@ -216,7 +252,7 @@ public interface TfaConfig extends Config
 		keyName = "ezekielSwordHpBarColour",
 		name = " ↳ Colour",
 		description = "",
-		position = 1,
+		position = 2,
 		section = SECTION_EZEKIEL
 	)
 	default Color ezekielSwordHpBarColour()
@@ -234,6 +270,51 @@ public interface TfaConfig extends Config
 		section = SECTION_MOIA
 	)
 	default boolean moiaRemoveWalkSceneryTiles()
+	{
+		return false;
+	}
+
+	// Dreadnoth
+
+	@ConfigItem(
+		keyName = "dreadnothAutocastWarning",
+		name = "Autocast Warning",
+		description = "Highlights the Dreadnoth entryway in red if you are on the Ancient spellbook and your autocast is not a Burst or Barrage spell.",
+		position = 0,
+		section = SECTION_DREADNOTH
+	)
+	default boolean dreadnothAutocastWarning()
+	{
+		return false;
+	}
+
+	// Xarth
+
+	@ConfigItem(
+		keyName = "xarthAutocastWarning",
+		name = "Autocast Warning",
+		description = "Highlights the Xarth entryway in red if your autocast is not right for your spellbook:" +
+			"<br />Standard: a Water spell." +
+			"<br />Ancient: an Ice spell." +
+			"<br />Arceuus: a Grasp spell.",
+		position = 0,
+		section = SECTION_XARTH
+	)
+	default boolean xarthAutocastWarning()
+	{
+		return false;
+	}
+
+	// Ocellus
+
+	@ConfigItem(
+		keyName = "ocellusAutocastWarning",
+		name = "Autocast Warning",
+		description = "Highlights the Ocellus entryway in red if you are on the Standard spellbook and your autocast is not an Earth spell.",
+		position = 0,
+		section = SECTION_OCELLUS
+	)
+	default boolean ocellusAutocastWarning()
 	{
 		return false;
 	}

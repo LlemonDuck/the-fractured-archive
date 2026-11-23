@@ -4,6 +4,7 @@ import com.duckblade.osrs.tfa.TfaConfig;
 import com.duckblade.osrs.tfa.features.FadeDisabler;
 import com.duckblade.osrs.tfa.features.LobbyBoardHighlighter;
 import com.duckblade.osrs.tfa.features.QuickProceedSwaps;
+import com.duckblade.osrs.tfa.features.autocast.AutocastWarning;
 import com.duckblade.osrs.tfa.features.ezekiel.SwordHealthBarRecolour;
 import com.duckblade.osrs.tfa.features.hporbs.HealthBarsOverlay;
 import com.duckblade.osrs.tfa.features.lobby.AmbientNoiseMuter;
@@ -23,6 +24,7 @@ import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerFileDump;
 import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerInfoBoxes;
 import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerOverlay;
 import com.duckblade.osrs.tfa.features.updatenotifier.UpdateNotifier;
+import com.duckblade.osrs.tfa.util.AutocastTracker;
 import com.duckblade.osrs.tfa.util.RaidCompletionTracker;
 import com.duckblade.osrs.tfa.util.RaidFolder;
 import com.duckblade.osrs.tfa.util.RaidStateTracker;
@@ -47,6 +49,8 @@ public class TfaModule extends AbstractModule
 	@Provides
 	Set<PluginLifecycleComponent> lifecycleComponents(
 		AmbientNoiseMuter ambientNoiseMuter,
+		AutocastTracker autocastTracker,
+		AutocastWarning autocastWarning,
 		BuyMenuSwapper buyMenuSwapper,
 		ClaimYourLoot claimYourLoot,
 		DryStreakTracker dryStreakTracker,
@@ -75,6 +79,8 @@ public class TfaModule extends AbstractModule
 	{
 		return ImmutableSet.of(
 			ambientNoiseMuter,
+			autocastTracker,
+			autocastWarning,
 			buyMenuSwapper,
 			claimYourLoot,
 			dryStreakTracker,
