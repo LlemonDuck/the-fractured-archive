@@ -18,6 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -75,6 +76,8 @@ public class PointsTracker
 	// how long to wait for the rest of the party to report their damage for a room/phase
 	private static final int PARTY_TIMEOUT_TICKS = 8;
 
+	private static final int NOT_PENDING = -1;
+
 	private final Client client;
 	private final TfaConfig config;
 	private final ChatMessageManager chatMessageManager;
@@ -82,28 +85,27 @@ public class PointsTracker
 	private final PartyService partyService;
 	private final RaidStateTracker raidStateTracker;
 	private final PartyDamageTracker partyDamageTracker;
-	private final PlayerPointsLedger ledger;
 
-	// true iff every room resolved so far used every raid member's reported damage; sticky false
-	// for the rest of the raid once the fallback is used for any room
-	@Getter
-	private boolean accurate;
+	private final List<RaidLogEntry> raidLog = new ArrayList<>();
+
+	@Getter(AccessLevel.PACKAGE)
+	private PointsBreakdown breakdown = PointsBreakdown.EMPTY;
 
 	private String localName;
 	private int teamSize;
 	private int deathPenalty;
 
-	// damage observed via hitsplats since the last completion; used only by the fallback
 	private int pendingPersonalDamage;
 	private int pendingRoomDamage;
 
-	// the completion currently pending resolution, or null if nothing is pending. Only one
-	// completion is ever pending at a time (rooms/phases complete minutes apart).
-	private PendingRoomPhase pending;
+	// index in raidLog of the completion still waiting on the party's damage reports, or NOT_PENDING
+	private int pendingIndex;
+	private int pendingTicksRemaining;
 
-	// deaths observed while a completion is pending, in arrival order; applied immediately after
-	// that completion's award, before anything reads the totals for it
-	private final List<String> deferredDeaths = new ArrayList<>();
+	private long seenDamageVersion;
+
+	// set once the final room settles; points are fixed from then on
+	private boolean finalized;
 
 	@Override
 	public boolean isEnabled(TfaConfig config, RaidState raidState)
@@ -118,26 +120,15 @@ public class PointsTracker
 	@Override
 	public void startUp()
 	{
-		ledger.reset();
-		accurate = true;
+		raidLog.clear();
+		breakdown = PointsBreakdown.EMPTY;
 		pendingPersonalDamage = 0;
 		pendingRoomDamage = 0;
-		pending = null;
-		deferredDeaths.clear();
+		pendingIndex = NOT_PENDING;
+		pendingTicksRemaining = 0;
+		seenDamageVersion = partyDamageTracker.getVersion();
+		finalized = false;
 		localName = Text.toJagexName(client.getLocalPlayer().getName());
-	}
-
-	@Override
-	public void shutDown()
-	{
-		// a pending resolution, and the deaths deferred behind it, are discarded - not applied -
-		// if tracking stops before it resolves
-		if (pending != null)
-		{
-			partyDamageTracker.clear(pending.getRoom(), pending.getPhase());
-		}
-		pending = null;
-		deferredDeaths.clear();
 	}
 
 	@Subscribe
@@ -154,14 +145,14 @@ public class PointsTracker
 		{
 			if (message.startsWith(PERSONAL_DEATH_PREFIX))
 			{
-				applyDeathPenalty(localName);
+				logDeath(localName);
 				return;
 			}
 
 			Matcher m = OTHER_DEATH_PATTERN.matcher(message);
 			if (m.matches())
 			{
-				applyDeathPenalty(Text.toJagexName(m.group(1)));
+				logDeath(Text.toJagexName(m.group(1)));
 			}
 			else
 			{
@@ -200,13 +191,26 @@ public class PointsTracker
 	@Subscribe
 	public void onGameTick(GameTick e)
 	{
-		if (pending == null)
+		if (finalized)
 		{
 			return;
 		}
 
-		pending.countDownTick();
-		tryResolvePending();
+		if (pendingIndex != NOT_PENDING)
+		{
+			pendingTicksRemaining--;
+			if (pendingTicksRemaining <= 0 || isPendingComplete())
+			{
+				settle(pendingIndex);
+				return;
+			}
+		}
+
+		if (partyDamageTracker.getVersion() != seenDamageVersion)
+		{
+			// something new came in, so recalculate
+			replay();
+		}
 	}
 
 	@Subscribe(priority = 1) // needs to be above ComponentManager to run before shutDown
@@ -218,14 +222,19 @@ public class PointsTracker
 		}
 	}
 
+	public boolean isAccurate()
+	{
+		return breakdown.isAccurate();
+	}
+
 	public int getPersonalPoints()
 	{
-		return ledger.getTotal(localName);
+		return breakdown.getTotal(localName);
 	}
 
 	public int getTeamPoints()
 	{
-		return ledger.getTeamTotal();
+		return breakdown.getTeamTotal();
 	}
 
 	public double getPersonalPercent()
@@ -256,29 +265,28 @@ public class PointsTracker
 		return getPersonalPercent() * getTeamUniqueChance();
 	}
 
-	private void applyDeathPenalty(String name)
+	private void logDeath(String name)
 	{
-		if (pending != null)
+		if (finalized)
 		{
-			// deaths that happen right after a room clear need to be deferred
-			// until the room points are settled
-			log.debug("death penalty for {} deferred behind pending {}.{}", name, pending.getRoom(), pending.getPhase());
-			deferredDeaths.add(name);
+			log.debug("ignoring death of {} after the raid was finalized", name);
+			return;
 		}
-		else
-		{
-			log.debug("death penalty for {} applied immediately", name);
-			ledger.adjust(name, -deathPenalty);
-		}
+
+		log.debug("death penalty {} for {}", deathPenalty, name);
+		raidLog.add(new RaidLogEntry.Death(name, deathPenalty));
+		replay();
 	}
 
 	private void completeRoom(RaidRoom room, int phase)
 	{
-		// assumption: two completions can't overlap
+		if (pendingIndex != NOT_PENDING)
+		{
+			// defensive guard: this shouldn't happen since rooms can't complete close enough together
+			settle(pendingIndex);
+		}
 
 		int roomPoints = getRoomPoints(room, phase);
-		boolean isFinalRoom = room == RaidRoom.OCELLUS && phase == 4;
-
 		int localDamage = pendingPersonalDamage;
 		int observedDamage = pendingRoomDamage;
 		pendingPersonalDamage = 0;
@@ -286,114 +294,62 @@ public class PointsTracker
 
 		log.debug("completing {}.{} for {} points, local damage {} / observed room damage {}", room, phase, roomPoints, localDamage, observedDamage);
 
-		if (teamSize <= 1)
-		{
-			// solo raid, local player always gets the full amount
-			ledger.adjust(localName, roomPoints);
-			if (isFinalRoom)
-			{
-				finishRaid();
-			}
-			return;
-		}
-
-		if (!partyService.isInParty())
-		{
-			// no party, immediately use inaccurate calculation
-			applyFallback(roomPoints, localDamage, observedDamage);
-			if (isFinalRoom)
-			{
-				finishRaid();
-			}
-			return;
-		}
-
-		pending = new PendingRoomPhase(
-			room, phase, roomPoints, isFinalRoom, raidStateTracker.getRaidMemberNames(),
-			localDamage, observedDamage, PARTY_TIMEOUT_TICKS
-		);
-
 		partyDamageTracker.recordOwnReport(room, phase, localName, localDamage);
-		tryResolvePending();
-	}
+		raidLog.add(new RaidLogEntry.RoomCompleted(room, phase, roomPoints, observedDamage));
+		int index = raidLog.size() - 1;
 
-	private void tryResolvePending()
-	{
-		if (pending == null)
+		if (teamSize > 1 && partyService.isInParty())
 		{
-			return;
-		}
-
-		Map<String, Integer> reports = partyDamageTracker.getDamageByName(pending.getRoom(), pending.getPhase());
-		boolean complete = reports.size() >= pending.getRoster().size() && reports.keySet().containsAll(pending.getRoster());
-
-		if (!complete && pending.getTicksRemaining() > 0)
-		{
-			return;
-		}
-
-		resolvePending(complete ? reports : null);
-	}
-
-	private void resolvePending(Map<String, Integer> completeReports)
-	{
-		if (completeReports != null)
-		{
-			log.debug("resolved {}.{} via party data: {}", pending.getRoom(), pending.getPhase(), completeReports);
-			Map<String, Integer> shares = RoomPointsApportioner.apportion(pending.getRoomPoints(), completeReports);
-			for (Map.Entry<String, Integer> entry : shares.entrySet())
+			pendingIndex = index;
+			pendingTicksRemaining = PARTY_TIMEOUT_TICKS;
+			if (!isPendingComplete())
 			{
-				ledger.adjust(entry.getKey(), entry.getValue());
+				return;
 			}
 		}
-		else
-		{
-			log.debug(
-				"party data incomplete for {}.{} after timeout (roster {}), using fallback",
-				pending.getRoom(), pending.getPhase(), pending.getRoster()
-			);
-			applyFallback(pending.getRoomPoints(), pending.getFallbackLocalDamage(), pending.getFallbackObservedDamage());
-		}
 
-		for (String deadPlayer : deferredDeaths)
-		{
-			log.debug("applying deferred death penalty for {}", deadPlayer);
-			ledger.adjust(deadPlayer, -deathPenalty);
-		}
-		deferredDeaths.clear();
+		settle(index);
+	}
 
-		partyDamageTracker.clear(pending.getRoom(), pending.getPhase());
-		boolean isFinalRoom = pending.isFinalRoom();
-		pending = null;
+	private boolean isPendingComplete()
+	{
+		RaidLogEntry.RoomCompleted pending = (RaidLogEntry.RoomCompleted) raidLog.get(pendingIndex);
+		return PointsReplayer.isExact(
+			raidStateTracker.getRaidMemberNames(),
+			partyDamageTracker.getDamageByName(pending.getRoom(), pending.getPhase())
+		);
+	}
 
-		if (isFinalRoom)
+	private void settle(int index)
+	{
+		RaidLogEntry.RoomCompleted completed = (RaidLogEntry.RoomCompleted) raidLog.get(index);
+		pendingIndex = NOT_PENDING;
+		replay();
+
+		if (completed.isFinalRoom())
 		{
+			finalized = true;
 			finishRaid();
 		}
 	}
 
-	private void applyFallback(int roomPoints, int personalDamage, int observedRoomDamage)
+	private void replay()
 	{
-		// grant personal points as a portion of all observed damage.
-		// everything else is unattributed
-		accurate = false;
-
-		int localShare = observedRoomDamage > 0
-			? (int) (((long) roomPoints * personalDamage) / observedRoomDamage)
-			: 0;
-
-		log.debug(
-			"fallback: {}/{} room points to local player ({} personal / {} observed damage), {} unattributed",
-			localShare, roomPoints, personalDamage, observedRoomDamage, roomPoints - localShare
+		seenDamageVersion = partyDamageTracker.getVersion();
+		List<RaidLogEntry> settled = pendingIndex == NOT_PENDING ? raidLog : raidLog.subList(0, pendingIndex);
+		breakdown = PointsReplayer.replay(
+			settled,
+			raidStateTracker.getRaidMemberNames(),
+			partyDamageTracker.getDamageByRoomPhase(),
+			localName,
+			teamSize <= 1
 		);
-
-		ledger.adjust(localName, localShare);
-		ledger.addUnattributed(roomPoints - localShare);
+		log.debug("replayed {} log entries: team={} personal={} accurate={}", settled.size(), getTeamPoints(), getPersonalPoints(), isAccurate());
 	}
 
 	private void finishRaid()
 	{
-		log.debug("raid finished: team={} personal={} accurate={}", getTeamPoints(), getPersonalPoints(), accurate);
+		log.debug("raid finished: team={} personal={} accurate={}", getTeamPoints(), getPersonalPoints(), isAccurate());
 		postPointsEvent();
 		postPointsMessage();
 	}
@@ -418,7 +374,7 @@ public class PointsTracker
 
 		queueMessage(sb);
 
-		if (!accurate)
+		if (!isAccurate())
 		{
 			queueMessage(
 				"One or more raid members do not have the TFA plugin and/or are not in a RuneLite party together. Points are a rough estimate.");
@@ -449,7 +405,7 @@ public class PointsTracker
 				.put("version", EVENT_VERSION)
 				.put("totalPoints", getTeamPoints())
 				.put("personalPoints", getPersonalPoints())
-				.put("accurate", accurate)
+				.put("accurate", isAccurate())
 				.build()
 		));
 	}

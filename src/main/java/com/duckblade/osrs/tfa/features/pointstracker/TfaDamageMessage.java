@@ -2,44 +2,33 @@ package com.duckblade.osrs.tfa.features.pointstracker;
 
 import com.duckblade.osrs.tfa.util.RaidRoom;
 import com.google.gson.annotations.SerializedName;
-import lombok.AccessLevel;
+import java.util.List;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import net.runelite.client.party.messages.PartyMemberMessage;
 
 @Getter
+@RequiredArgsConstructor
 public class TfaDamageMessage extends PartyMemberMessage
 {
 
 	@SerializedName("r")
-	private final RaidRoom room;
+	private final List<Report> reports;
 
-	@SerializedName("p")
-	private final int phase;
-
-	// buncha ugly backwards compat stuff from centralized phase tracking
-	// todo remove this on the next game update, but keep "P" serial
-	@SerializedName("P")
-	@Getter(AccessLevel.NONE)
-	private final Integer phaseNew;
-
-	@SerializedName("d")
-	private final int damage;
-
-	public TfaDamageMessage(RaidRoom room, int phase, int damage)
+	@Value
+	public static class Report
 	{
-		this.room = room;
-		this.phase = (this.room != RaidRoom.OCELLUS) ? 0 : phase;
-		this.phaseNew = phase;
-		this.damage = damage;
+
+		@SerializedName("r")
+		RaidRoom room;
+
+		@SerializedName("p")
+		int phase;
+
+		@SerializedName("d")
+		int damage;
+
 	}
 
-	public int getPhase()
-	{
-		if (phaseNew != null)
-		{
-			return phaseNew;
-		}
-
-		return room == RaidRoom.OCELLUS ? phase : 1;
-	}
 }

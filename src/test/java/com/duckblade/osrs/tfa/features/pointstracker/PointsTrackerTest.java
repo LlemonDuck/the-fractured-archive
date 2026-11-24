@@ -6,29 +6,34 @@ import com.duckblade.osrs.tfa.util.RaidState;
 import com.duckblade.osrs.tfa.util.RaidStateChanged;
 import com.duckblade.osrs.tfa.util.RaidStateTracker;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.Hitsplat;
 import net.runelite.api.HitsplatID;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
-import net.runelite.api.ChatMessageType;
-import net.runelite.api.Hitsplat;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
 import net.runelite.client.chat.ChatMessageManager;
-import net.runelite.client.events.PluginMessage;
 import net.runelite.client.eventbus.EventBus;
+import net.runelite.client.events.PluginMessage;
+import net.runelite.client.party.PartyMember;
 import net.runelite.client.party.PartyService;
+import net.runelite.client.party.WSClient;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -55,15 +60,18 @@ class PointsTrackerTest
 	PartyService partyService;
 
 	@Mock
-	RaidStateTracker raidStateTracker;
+	WSClient wsClient;
 
 	@Mock
-	PartyDamageTracker partyDamageTracker;
+	RaidStateTracker raidStateTracker;
 
 	@Mock
 	Player localPlayer;
 
+	PartyDamageTracker damageTracker;
 	PointsTracker tracker;
+
+	private final Map<String, Long> memberIds = new HashMap<>();
 
 	@BeforeEach
 	void setUp()
@@ -71,7 +79,8 @@ class PointsTrackerTest
 		lenient().when(client.getLocalPlayer()).thenReturn(localPlayer);
 		lenient().when(localPlayer.getName()).thenReturn("Alice");
 		lenient().when(raidStateTracker.getRaidMemberNames()).thenReturn(Set.of("Alice", "Bob"));
-		tracker = new PointsTracker(client, config, chatMessageManager, eventBus, partyService, raidStateTracker, partyDamageTracker, new PlayerPointsLedger());
+		damageTracker = new PartyDamageTracker(partyService, wsClient, raidStateTracker);
+		tracker = new PointsTracker(client, config, chatMessageManager, eventBus, partyService, raidStateTracker, damageTracker);
 	}
 
 	private void start(int teamSize, RaidRoom currentRoom)
@@ -131,7 +140,30 @@ class PointsTrackerTest
 		tracker.onHitsplatApplied(e);
 	}
 
-	// --- acceptance 3: fallback ---
+	// a party member's full damage history arriving over the party
+	private void partyHistory(String name, TfaDamageMessage.Report... reports)
+	{
+		long memberId = memberIds.computeIfAbsent(name, n ->
+		{
+			long id = memberIds.size() + 1;
+			PartyMember member = mock(PartyMember.class);
+			lenient().when(member.getDisplayName()).thenReturn(n);
+			lenient().when(member.isLoggedIn()).thenReturn(true);
+			lenient().when(partyService.getMemberById(id)).thenReturn(member);
+			return id;
+		});
+
+		TfaDamageMessage msg = new TfaDamageMessage(List.of(reports));
+		msg.setMemberId(memberId);
+		damageTracker.onTfaDamageMessage(msg);
+	}
+
+	private static TfaDamageMessage.Report report(RaidRoom room, int phase, int damage)
+	{
+		return new TfaDamageMessage.Report(room, phase, damage);
+	}
+
+	// --- fallback ---
 
 	@Test
 	void fallbackWhenNotInPartyRoundsDownAndMakesTotalInaccurate()
@@ -149,7 +181,108 @@ class PointsTrackerTest
 		assertEquals(100, tracker.getTeamPoints()); // 25 personal + 75 unattributed
 	}
 
-	// --- acceptance 7: death during pending is deferred, applied after the award ---
+	// --- late party join / late reports ---
+
+	@Test
+	void partyJoinAfterAFallbackRoomUpgradesItToExact()
+	{
+		start(2, RaidRoom.EZEKIEL);
+		when(partyService.isInParty()).thenReturn(false);
+
+		hit(true, 50);
+		hit(false, 150);
+		challengeComplete();
+		assertEquals(25, tracker.getPersonalPoints());
+
+		// Bob joins the party and shares his history
+		partyHistory("Bob", report(RaidRoom.EZEKIEL, 1, 30));
+		tracker.onGameTick(new GameTick());
+
+		// 100 split 50/30 -> 62.5/37.5, the tied remainder goes to Alice by name
+		assertTrue(tracker.isAccurate());
+		assertEquals(63, tracker.getPersonalPoints());
+		assertEquals(100, tracker.getTeamPoints());
+	}
+
+	@Test
+	void upgradeReplaysLaterDeathsAgainstTheUpgradedAwards()
+	{
+		start(2, RaidRoom.EZEKIEL);
+		when(partyService.isInParty()).thenReturn(false);
+
+		hit(true, 50);
+		hit(false, 150);
+		challengeComplete();
+		died("Bob has died. Total deaths: 1.");
+		died("Bob has died. Total deaths: 2.");
+
+		// fallback: Bob's points are unattributed, so his deaths floor at -50: 25 + 75 - 50
+		assertEquals(50, tracker.getTeamPoints());
+
+		partyHistory("Bob", report(RaidRoom.EZEKIEL, 1, 30));
+		tracker.onGameTick(new GameTick());
+
+		// Bob 37 -> 2 -> -33, Alice 63
+		assertEquals(30, tracker.getTeamPoints());
+	}
+
+	@Test
+	void upgradeOnlyCoversRoomsEveryoneReported()
+	{
+		start(2, RaidRoom.EZEKIEL);
+		when(partyService.isInParty()).thenReturn(false);
+
+		hit(true, 50);
+		challengeComplete();
+		hit(true, 40);
+		phaseCompleted(RaidRoom.MOIA, 1);
+
+		partyHistory("Bob", report(RaidRoom.EZEKIEL, 1, 50));
+		tracker.onGameTick(new GameTick());
+
+		List<PointsBreakdown.RoomResult> rooms = tracker.getBreakdown().getRooms();
+		assertTrue(rooms.get(0).isExact());
+		assertFalse(rooms.get(1).isExact());
+		assertFalse(tracker.isAccurate());
+	}
+
+	@Test
+	void reportsAfterTheFinalRoomSettlesChangeNothing()
+	{
+		when(config.pointsTrackerAllowExternal()).thenReturn(true);
+		start(2, RaidRoom.OCELLUS);
+		when(partyService.isInParty()).thenReturn(true);
+
+		hit(true, 10);
+		phaseCompleted(RaidRoom.OCELLUS, 4);
+		for (int i = 0; i < 8; i++)
+		{
+			tracker.onGameTick(new GameTick());
+		}
+		verify(eventBus).post(any(PluginMessage.class));
+		int personal = tracker.getPersonalPoints();
+
+		partyHistory("Bob", report(RaidRoom.OCELLUS, 4, 42));
+		tracker.onGameTick(new GameTick());
+
+		assertFalse(tracker.isAccurate());
+		assertEquals(personal, tracker.getPersonalPoints());
+		verify(eventBus).post(any(PluginMessage.class));
+	}
+
+	@Test
+	void finalRoomFinalizesImmediatelyWhenNotInParty()
+	{
+		when(config.pointsTrackerAllowExternal()).thenReturn(true);
+		start(2, RaidRoom.OCELLUS);
+		when(partyService.isInParty()).thenReturn(false);
+
+		phaseCompleted(RaidRoom.OCELLUS, 4);
+
+		verify(eventBus).post(any(PluginMessage.class));
+	}
+
+	// --- death during pending is deferred, applied after the award ---
 
 	@Test
 	void deathDuringPendingWindowAppliesAfterTheAwardNotBefore()
@@ -162,10 +295,6 @@ class PointsTrackerTest
 		died("You have died. Total deaths: 2.");
 		assertEquals(-50, tracker.getPersonalPoints());
 
-		Map<String, Integer> reports = new HashMap<>();
-		reports.put("Alice", 12);
-		when(partyDamageTracker.getDamageByName(RaidRoom.EZEKIEL, 1)).thenReturn(reports);
-
 		hit(true, 12);
 		challengeComplete(); // starts pending: incomplete (Bob hasn't reported), doesn't resolve yet
 
@@ -174,13 +303,11 @@ class PointsTrackerTest
 		// still not resolved, so the deferred death must not have landed yet
 		assertEquals(-50, tracker.getPersonalPoints());
 
-		reports.put("Bob", 88);
+		partyHistory("Bob", report(RaidRoom.EZEKIEL, 1, 88));
 		tracker.onGameTick(new GameTick()); // now complete -> resolves: award first (-50+12=-38), then the deferred death (-38-35=-73, floored to -50)
 
 		assertEquals(-50, tracker.getPersonalPoints());
 	}
-
-	// --- acceptance 8: multiple deferred deaths apply in arrival order, after the award ---
 
 	@Test
 	void multipleDeferredDeathsAllApplyAfterTheAward()
@@ -188,23 +315,17 @@ class PointsTrackerTest
 		start(2, RaidRoom.EZEKIEL);
 		when(partyService.isInParty()).thenReturn(true);
 
-		Map<String, Integer> reports = new HashMap<>();
-		reports.put("Alice", 12);
-		when(partyDamageTracker.getDamageByName(RaidRoom.EZEKIEL, 1)).thenReturn(reports);
-
 		hit(true, 12);
 		challengeComplete(); // pending, incomplete
 
 		died("You have died. Total deaths: 1."); // Alice, deferred
 		died("Bob has died. Total deaths: 1."); // Bob, deferred
 
-		reports.put("Bob", 88);
+		partyHistory("Bob", report(RaidRoom.EZEKIEL, 1, 88));
 		tracker.onGameTick(new GameTick()); // resolves: awards (Alice 12, Bob 88), then both deferred deaths
 
 		assertEquals(12 - 35, tracker.getPersonalPoints()); // Alice: award then her own death penalty
 	}
-
-	// --- acceptance 9: completion event totals include a death deferred behind the final room ---
 
 	@Test
 	void completionEventTotalsIncludeDeferredDeathBehindFinalRoom()
@@ -213,18 +334,14 @@ class PointsTrackerTest
 		start(2, RaidRoom.OCELLUS);
 		when(partyService.isInParty()).thenReturn(true);
 
-		Map<String, Integer> reports = new HashMap<>();
-		reports.put("Alice", 10);
-		when(partyDamageTracker.getDamageByName(RaidRoom.OCELLUS, 4)).thenReturn(reports);
-
 		hit(true, 10);
 		phaseCompleted(RaidRoom.OCELLUS, 4);
 		// pending, incomplete (Bob hasn't reported) -> this death must defer behind the award
 		died("You have died. Total deaths: 1.");
 
-		verify(eventBus, never()).post(org.mockito.ArgumentMatchers.any(PluginMessage.class));
+		verify(eventBus, never()).post(any(PluginMessage.class));
 
-		reports.put("Bob", 42);
+		partyHistory("Bob", report(RaidRoom.OCELLUS, 4, 42));
 		tracker.onGameTick(new GameTick()); // completes the set -> resolves: award, then the deferred death, then the event
 
 		ArgumentCaptor<PluginMessage> captor = ArgumentCaptor.forClass(PluginMessage.class);
@@ -235,30 +352,10 @@ class PointsTrackerTest
 		// deferred death penalty (35) applies on top: 10 - 35 = -25
 		assertEquals(-25, event.getData().get("personalPoints"));
 		assertEquals(tracker.getTeamPoints(), event.getData().get("totalPoints"));
+		assertEquals(true, event.getData().get("accurate"));
 	}
 
-	// --- acceptance 10: discard on stop ---
-
-	@Test
-	void pendingResolutionAndDeferredDeathsAreDiscardedOnStop()
-	{
-		start(2, RaidRoom.EZEKIEL);
-		when(partyService.isInParty()).thenReturn(true);
-		when(partyDamageTracker.getDamageByName(RaidRoom.EZEKIEL, 1)).thenReturn(Map.of("Alice", 12));
-
-		hit(true, 12);
-		challengeComplete(); // pending, incomplete
-		died("You have died. Total deaths: 1."); // deferred
-
-		assertEquals(0, tracker.getPersonalPoints());
-
-		tracker.shutDown();
-
-		assertEquals(0, tracker.getPersonalPoints());
-		assertEquals(0, tracker.getTeamPoints());
-	}
-
-	// --- acceptance 11: death message parsing ---
+	// --- death message parsing ---
 
 	@Test
 	void parsesPersonalDeathMessage()
@@ -273,11 +370,10 @@ class PointsTrackerTest
 	{
 		start(2, RaidRoom.EZEKIEL);
 		when(partyService.isInParty()).thenReturn(true);
-		when(partyDamageTracker.getDamageByName(RaidRoom.EZEKIEL, 1)).thenReturn(Map.of("Alice", 0, "Bob", 100));
+		partyHistory("Bob", report(RaidRoom.EZEKIEL, 1, 100));
 
 		died("<col=ff0000>Bob</col> has died. Total deaths: 1.");
 
-		hit(true, 0);
 		challengeComplete(); // resolves immediately (full set already present) -> Bob gets 100
 
 		assertEquals(100 - 35, tracker.getTeamPoints() - tracker.getPersonalPoints());
@@ -290,7 +386,7 @@ class PointsTrackerTest
 		died("Total deaths: this is not a real death message");
 		assertEquals(0, tracker.getPersonalPoints());
 		assertEquals(0, tracker.getTeamPoints());
-		verify(eventBus, never()).post(org.mockito.ArgumentMatchers.any(PluginMessage.class));
+		verify(eventBus, never()).post(any(PluginMessage.class));
 	}
 
 	// --- completion is driven by RaidStateChanged, not chat ---
@@ -334,11 +430,11 @@ class PointsTrackerTest
 		assertEquals(90, tracker.getPersonalPoints());
 		phaseCompleted(RaidRoom.OCELLUS, 3);
 		assertEquals(248, tracker.getPersonalPoints());
-		verify(eventBus, never()).post(org.mockito.ArgumentMatchers.any(PluginMessage.class));
+		verify(eventBus, never()).post(any(PluginMessage.class));
 
 		phaseCompleted(RaidRoom.OCELLUS, 4);
 		assertEquals(300, tracker.getPersonalPoints());
-		verify(eventBus).post(org.mockito.ArgumentMatchers.any(PluginMessage.class));
+		verify(eventBus).post(any(PluginMessage.class));
 	}
 
 }

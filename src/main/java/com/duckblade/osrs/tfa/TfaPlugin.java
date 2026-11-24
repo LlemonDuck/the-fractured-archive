@@ -7,6 +7,8 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.client.party.PartyDataService;
+import net.runelite.client.party.PartyDataType;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.util.Filepath;
@@ -29,6 +31,9 @@ public class TfaPlugin extends Plugin
 	@Inject
 	private ConfigMigrationService configMigrationService;
 
+	@Inject
+	private PartyDataService partyDataService;
+
 	private ComponentManager componentManager = null;
 
 	@Override
@@ -45,6 +50,7 @@ public class TfaPlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
+		partyDataService.subscribe(this, PartyDataType.CHARACTER_NAME);
 		configMigrationService.migrate();
 
 		if (componentManager == null)
@@ -57,6 +63,7 @@ public class TfaPlugin extends Plugin
 	@Override
 	protected void shutDown() throws Exception
 	{
+		partyDataService.unsubscribe(this, PartyDataType.CHARACTER_NAME);
 		componentManager.onPluginStop();
 	}
 }

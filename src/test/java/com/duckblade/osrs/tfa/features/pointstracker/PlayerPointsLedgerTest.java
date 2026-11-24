@@ -10,26 +10,24 @@ class PlayerPointsLedgerTest
 	void floorAppliesOnlyAsALowerBound()
 	{
 		PlayerPointsLedger ledger = new PlayerPointsLedger();
-		ledger.adjust("alice", -1000);
-		assertEquals(-50, ledger.getTotal("alice"));
+		assertEquals(-50, ledger.adjust("alice", -1000));
+		assertEquals(-50, ledger.getTotals().get("alice"));
 
-		// a loss while already at the floor stays at the floor
-		ledger.adjust("alice", -35);
-		assertEquals(-50, ledger.getTotal("alice"));
+		// a loss while already at the floor stays at the floor, and applies nothing
+		assertEquals(0, ledger.adjust("alice", -35));
+		assertEquals(-50, ledger.getTotals().get("alice"));
 
 		// a gain lifts out of the floor normally
-		ledger.adjust("alice", 10);
-		assertEquals(-40, ledger.getTotal("alice"));
+		assertEquals(10, ledger.adjust("alice", 10));
+		assertEquals(-40, ledger.getTotals().get("alice"));
 	}
 
 	@Test
 	void unattributedPointsAreNeverFloored()
 	{
 		PlayerPointsLedger ledger = new PlayerPointsLedger();
-		ledger.addUnattributed(5);
-		ledger.addUnattributed(5);
-		assertEquals(10, ledger.getUnattributed());
-		assertEquals(10, ledger.getTeamTotal());
+		ledger.addUnattributed(-1000);
+		assertEquals(-1000, ledger.getUnattributed());
 	}
 
 	@Test
@@ -39,9 +37,9 @@ class PlayerPointsLedgerTest
 		PlayerPointsLedger ledger = new PlayerPointsLedger();
 		ledger.adjust("alice", 50);
 		ledger.adjust("alice", -35);
-		assertEquals(15, ledger.getTotal("alice"));
+		assertEquals(15, ledger.getTotals().get("alice"));
 		ledger.adjust("alice", 12);
-		assertEquals(27, ledger.getTotal("alice"));
+		assertEquals(27, ledger.getTotals().get("alice"));
 	}
 
 	@Test
@@ -51,9 +49,9 @@ class PlayerPointsLedgerTest
 		PlayerPointsLedger ledger = new PlayerPointsLedger();
 		ledger.adjust("alice", -40);
 		ledger.adjust("alice", -35);
-		assertEquals(-50, ledger.getTotal("alice"));
+		assertEquals(-50, ledger.getTotals().get("alice"));
 		ledger.adjust("alice", 12);
-		assertEquals(-38, ledger.getTotal("alice"));
+		assertEquals(-38, ledger.getTotals().get("alice"));
 	}
 
 	@Test
@@ -64,19 +62,9 @@ class PlayerPointsLedgerTest
 		PlayerPointsLedger ledger = new PlayerPointsLedger();
 		ledger.adjust("alice", -40);
 		ledger.adjust("alice", 12);
-		assertEquals(-28, ledger.getTotal("alice"));
+		assertEquals(-28, ledger.getTotals().get("alice"));
 		ledger.adjust("alice", -35);
-		assertEquals(-50, ledger.getTotal("alice"));
-	}
-
-	@Test
-	void teamTotalIsSumOfPlayersPlusUnattributed()
-	{
-		PlayerPointsLedger ledger = new PlayerPointsLedger();
-		ledger.adjust("alice", 60);
-		ledger.adjust("bob", 30);
-		ledger.addUnattributed(10);
-		assertEquals(100, ledger.getTeamTotal());
+		assertEquals(-50, ledger.getTotals().get("alice"));
 	}
 
 }
