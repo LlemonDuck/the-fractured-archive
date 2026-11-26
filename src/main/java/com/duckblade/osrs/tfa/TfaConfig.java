@@ -222,6 +222,18 @@ public interface TfaConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+		keyName = "lobbyMuteOverheadText",
+		name = "Mute NPC Overhead Text",
+		description = "Hides the overhead text of the NPCs in the raid lobby.",
+		section = SECTION_LOBBY,
+		position = 5
+	)
+	default boolean lobbyMuteOverheadText()
+	{
+		return false;
+	}
+
 	// Ezekiel
 
 	@ConfigItem(

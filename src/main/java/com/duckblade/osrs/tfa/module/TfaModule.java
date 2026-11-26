@@ -10,6 +10,7 @@ import com.duckblade.osrs.tfa.features.hporbs.HealthBarsOverlay;
 import com.duckblade.osrs.tfa.features.lobby.AmbientNoiseMuter;
 import com.duckblade.osrs.tfa.features.lobby.ClaimYourLoot;
 import com.duckblade.osrs.tfa.features.lobby.EmptyNamesRemover;
+import com.duckblade.osrs.tfa.features.lobby.LobbyOverheadTextMuter;
 import com.duckblade.osrs.tfa.features.lobby.SpellbookWarning;
 import com.duckblade.osrs.tfa.features.loot.DryStreakTracker;
 import com.duckblade.osrs.tfa.features.loot.LootChestHighlight;
@@ -63,6 +64,7 @@ public class TfaModule extends AbstractModule
 		FadeDisabler fadeDisabler,
 		HealthBarsOverlay healthBarsOverlay,
 		LobbyBoardHighlighter lobbyBoardHighlighter,
+		LobbyOverheadTextMuter lobbyOverheadTextMuter,
 		LootChestHighlight lootChestHighlight,
 		LootLeftClickBankAll lootLeftClickBankAll,
 		MoiaEnrageBarRecolour moiaEnrageBarRecolour,
@@ -98,6 +100,7 @@ public class TfaModule extends AbstractModule
 			fadeDisabler,
 			healthBarsOverlay,
 			lobbyBoardHighlighter,
+			lobbyOverheadTextMuter,
 			lootChestHighlight,
 			lootLeftClickBankAll,
 			moiaEnrageBarRecolour,
