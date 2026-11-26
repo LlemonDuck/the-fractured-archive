@@ -14,6 +14,7 @@ import com.duckblade.osrs.tfa.features.lobby.LobbyOverheadTextMuter;
 import com.duckblade.osrs.tfa.features.lobby.SpellbookWarning;
 import com.duckblade.osrs.tfa.features.loot.DryStreakTracker;
 import com.duckblade.osrs.tfa.features.loot.LootChestHighlight;
+import com.duckblade.osrs.tfa.features.loot.LootFlameRecolour;
 import com.duckblade.osrs.tfa.features.loot.LootLeftClickBankAll;
 import com.duckblade.osrs.tfa.features.moia.MoiaEnrageBarRecolour;
 import com.duckblade.osrs.tfa.features.moia.RemoveMoiaWalkSceneryTiles;
@@ -66,6 +67,7 @@ public class TfaModule extends AbstractModule
 		LobbyBoardHighlighter lobbyBoardHighlighter,
 		LobbyOverheadTextMuter lobbyOverheadTextMuter,
 		LootChestHighlight lootChestHighlight,
+		LootFlameRecolour lootFlameRecolour,
 		LootLeftClickBankAll lootLeftClickBankAll,
 		MoiaEnrageBarRecolour moiaEnrageBarRecolour,
 		OcellusStartQuadrant ocellusStartQuadrant,
@@ -102,6 +104,7 @@ public class TfaModule extends AbstractModule
 			lobbyBoardHighlighter,
 			lobbyOverheadTextMuter,
 			lootChestHighlight,
+			lootFlameRecolour,
 			lootLeftClickBankAll,
 			moiaEnrageBarRecolour,
 			ocellusStartQuadrant,

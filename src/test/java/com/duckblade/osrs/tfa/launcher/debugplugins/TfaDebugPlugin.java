@@ -29,6 +29,9 @@ public class TfaDebugPlugin extends Plugin
 	private EventFileLogger eventFileLogger;
 
 	@Inject
+	private BrazierSpawner brazierSpawner;
+
+	@Inject
 	private EventBus eventBus;
 
 	@Inject
@@ -39,6 +42,7 @@ public class TfaDebugPlugin extends Plugin
 	{
 		overlayManager.add(stateOverlay);
 		eventBus.register(menuEntryDumper);
+		eventBus.register(brazierSpawner);
 
 		if (config.eventFileLogger())
 		{
@@ -51,6 +55,8 @@ public class TfaDebugPlugin extends Plugin
 	{
 		overlayManager.remove(stateOverlay);
 		eventBus.unregister(menuEntryDumper);
+		eventBus.unregister(brazierSpawner);
+		brazierSpawner.shutDown();
 		eventFileLogger.stop();
 	}
 

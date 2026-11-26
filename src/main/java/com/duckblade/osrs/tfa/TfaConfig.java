@@ -520,10 +520,82 @@ public interface TfaConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "lootFlameRecolourStandard",
+		name = "Recolour Standard Flames",
+		description = "Recolours the brazier flames when there is no purple.",
+		position = 6,
+		section = SECTION_LOOT
+	)
+	default boolean lootFlameRecolourStandard()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "lootFlameColourStandard",
+		name = " ↳ Colour",
+		description = "",
+		position = 7,
+		section = SECTION_LOOT
+	)
+	default Color lootFlameColourStandard()
+	{
+		return Color.WHITE;
+	}
+
+	@ConfigItem(
+		keyName = "lootFlameRecolourSelf",
+		name = "Recolour Own Purple Flames",
+		description = "Recolours the brazier flames when the purple is yours.",
+		position = 8,
+		section = SECTION_LOOT
+	)
+	default boolean lootFlameRecolourSelf()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "lootFlameColourSelf",
+		name = " ↳ Colour",
+		description = "",
+		position = 9,
+		section = SECTION_LOOT
+	)
+	default Color lootFlameColourSelf()
+	{
+		return new Color(0xCE3672);
+	}
+
+	@ConfigItem(
+		keyName = "lootFlameRecolourOther",
+		name = "Recolour Teammate Purple Flames",
+		description = "Recolours the brazier flames when the purple belongs to a teammate.",
+		position = 10,
+		section = SECTION_LOOT
+	)
+	default boolean lootFlameRecolourOther()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "lootFlameColourOther",
+		name = " ↳ Colour",
+		description = "",
+		position = 11,
+		section = SECTION_LOOT
+	)
+	default Color lootFlameColourOther()
+	{
+		return new Color(0x96BEFF);
+	}
+
+	@ConfigItem(
 		keyName = "teamDryStreakTrackerEnabled",
 		name = "Team Dry Streak",
 		description = "Shows the number of raids since your team last received a purple, in chat when you enter the loot room.",
-		position = 6,
+		position = 12,
 		section = SECTION_LOOT
 	)
 	default boolean teamDryStreakTrackerEnabled()
@@ -535,7 +607,7 @@ public interface TfaConfig extends Config
 		keyName = "personalDryStreakTrackerEnabled",
 		name = "Personal Dry Streak",
 		description = "Shows the number of raids since you last received a purple, in chat when you enter the loot room.",
-		position = 7,
+		position = 13,
 		section = SECTION_LOOT
 	)
 	default boolean personalDryStreakTrackerEnabled()
