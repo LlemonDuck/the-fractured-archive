@@ -14,6 +14,7 @@ import com.duckblade.osrs.tfa.features.lobby.SpellbookWarning;
 import com.duckblade.osrs.tfa.features.loot.DryStreakTracker;
 import com.duckblade.osrs.tfa.features.loot.LootChestHighlight;
 import com.duckblade.osrs.tfa.features.loot.LootLeftClickBankAll;
+import com.duckblade.osrs.tfa.features.moia.MoiaEnrageBarRecolour;
 import com.duckblade.osrs.tfa.features.moia.RemoveMoiaWalkSceneryTiles;
 import com.duckblade.osrs.tfa.features.ocellus.OcellusStartQuadrant;
 import com.duckblade.osrs.tfa.features.pointstracker.PartyDamageTracker;
@@ -64,6 +65,7 @@ public class TfaModule extends AbstractModule
 		LobbyBoardHighlighter lobbyBoardHighlighter,
 		LootChestHighlight lootChestHighlight,
 		LootLeftClickBankAll lootLeftClickBankAll,
+		MoiaEnrageBarRecolour moiaEnrageBarRecolour,
 		OcellusStartQuadrant ocellusStartQuadrant,
 		PartyDamageTracker partyDamageTracker,
 		PointsOverlay pointsOverlay,
@@ -98,6 +100,7 @@ public class TfaModule extends AbstractModule
 			lobbyBoardHighlighter,
 			lootChestHighlight,
 			lootLeftClickBankAll,
+			moiaEnrageBarRecolour,
 			ocellusStartQuadrant,
 			partyDamageTracker,
 			pointsOverlay,

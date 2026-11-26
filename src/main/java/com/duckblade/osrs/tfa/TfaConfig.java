@@ -274,6 +274,30 @@ public interface TfaConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+		keyName = "moiaEnrageBarRecolour",
+		name = "Enrage Bar Recolour",
+		description = "Recolours the enrage timer bar above Moia.",
+		position = 1,
+		section = SECTION_MOIA
+	)
+	default boolean moiaEnrageBarRecolour()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "moiaEnrageBarColour",
+		name = " ↳ Colour",
+		description = "",
+		position = 2,
+		section = SECTION_MOIA
+	)
+	default Color moiaEnrageBarColour()
+	{
+		return Color.CYAN;
+	}
+
 	// Dreadnoth
 
 	@ConfigItem(
