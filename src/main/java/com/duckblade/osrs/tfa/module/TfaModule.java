@@ -13,6 +13,7 @@ import com.duckblade.osrs.tfa.features.lobby.EmptyNamesRemover;
 import com.duckblade.osrs.tfa.features.lobby.LobbyOverheadTextMuter;
 import com.duckblade.osrs.tfa.features.lobby.ReorderAllianceLogTabs;
 import com.duckblade.osrs.tfa.features.lobby.SpellbookWarning;
+import com.duckblade.osrs.tfa.features.loot.DryStreakChatCommand;
 import com.duckblade.osrs.tfa.features.loot.DryStreakTracker;
 import com.duckblade.osrs.tfa.features.loot.LootChestHighlight;
 import com.duckblade.osrs.tfa.features.loot.LootFlameRecolour;
@@ -62,6 +63,7 @@ public class TfaModule extends AbstractModule
 		AutocastWarning autocastWarning,
 		BuyMenuSwapper buyMenuSwapper,
 		ClaimYourLoot claimYourLoot,
+		DryStreakChatCommand dryStreakChatCommand,
 		DryStreakTracker dryStreakTracker,
 		EmptyNamesRemover emptyNamesRemover,
 		FadeDisabler fadeDisabler,
@@ -101,6 +103,7 @@ public class TfaModule extends AbstractModule
 			autocastWarning,
 			buyMenuSwapper,
 			claimYourLoot,
+			dryStreakChatCommand,
 			dryStreakTracker,
 			emptyNamesRemover,
 			fadeDisabler,

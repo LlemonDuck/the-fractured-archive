@@ -627,6 +627,20 @@ public interface TfaConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+		keyName = "dryStreakChatCommandEnabled",
+		name = "!tfadry Chat Command",
+		description = "Responds to !tfadry in chat with the sender's dry streaks. Typing it yourself shares your streaks. " +
+			"Streaks only update while the dry streak trackers above are enabled. " +
+			"Streaks are stored in RuneLite's !duels chat command data, so using this overwrites your !duels stats.",
+		position = 14,
+		section = SECTION_LOOT
+	)
+	default boolean dryStreakChatCommandEnabled()
+	{
+		return true;
+	}
+
 	// points tracker
 
 	@ConfigItem(
