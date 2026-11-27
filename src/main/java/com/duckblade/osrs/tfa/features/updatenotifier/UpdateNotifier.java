@@ -20,7 +20,7 @@ public class UpdateNotifier
 	implements PluginLifecycleComponent
 {
 
-	public static final int TARGET_VERSION = 6;
+	public static final int TARGET_VERSION = 7;
 	private static final BufferedImage PANEL_ICON = ImageUtil.loadImageResource(UpdateNotifier.class, "icon.png");
 
 	private final ClientToolbar clientToolbar;
@@ -104,6 +104,16 @@ public class UpdateNotifier
 				updates.add("<strong>(Ocellus -> Start Quadrant Highlight)</strong> Highlights the starting quadrant opposite your chosen censer.");
 				updates.add("<strong>(Loot -> Dry Streak)</strong> Shows raids since your last purple, for you and your team.");
 				updates.add("<strong>(Time Tracker)</strong> Track room and raid times with an overlay, infoboxes, chat message, or a splits file.");
+
+			case 6:
+				updates.add("<strong>(Ocellus -> Proceed Indicator)</strong> Highlights players in red until they have clicked Proceed. Requires RL Party.");
+				updates.add("<strong>(Loot -> Recolour Flames)</strong> Recolour the loot room braziers for no purple, your own purple, and a teammate's purple.");
+				updates.add("<strong>(Loot -> !tfadry Chat Command)</strong> Type !tfadry in chat to share your dry streaks, and see other players' when they do the same.");
+				updates.add("<strong>(Moia -> Enrage Bar Recolour)</strong> Recolours the enrage timer bar above Moia.");
+				updates.add("<strong>(Lobby -> Mute NPC Overhead Text)</strong> Hides the overhead text of the NPCs in the lobby.");
+				updates.add("<strong>(Lobby -> Reorder Alliance Log Tabs)</strong> Reorders the alliance records in the lobby and loot room to match the in-raid room order.");
+				updates.add("<strong>(Autocast Warning)</strong> Now recognises all staves on the standard spellbook.");
+				updates.add("<strong>(Time Tracker)</strong> Fixed the Dagon'hai room not being recognised.");
 		}
 
 		return updates;
