@@ -18,10 +18,14 @@ import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.events.ItemSpawned;
 import net.runelite.api.events.NpcChanged;
 import net.runelite.api.events.VarClientStrChanged;
 import net.runelite.api.gameval.AnimationID;
 import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.api.gameval.NpcID;
 import net.runelite.api.gameval.VarClientID;
 import net.runelite.api.gameval.VarbitID;
@@ -82,6 +86,7 @@ public class RaidStateTracker
 	private boolean debouncedInRaid = false;
 	private int debounceTicks = 0;
 	private int phase;
+	private boolean practice;
 	private int ocellusQuadrantDestructs;
 
 	@Override
@@ -89,6 +94,7 @@ public class RaidStateTracker
 	{
 		rebuildRaidMemberNames();
 		phase = PHASE_UNSTARTED;
+		practice = false;
 	}
 
 	@Subscribe(priority = 5)
@@ -112,6 +118,11 @@ public class RaidStateTracker
 			int required = inRaidRaw ? ENTER_DEBOUNCE_TICKS : LEAVE_DEBOUNCE_TICKS;
 			if (debounceTicks >= required)
 			{
+				if (!inRaidRaw)
+				{
+					// leaving raid falling edge
+					practice = false;
+				}
 				debouncedInRaid = inRaidRaw;
 				debounceTicks = 0;
 			}
@@ -121,8 +132,6 @@ public class RaidStateTracker
 		// 1 = dead but part of raid
 		// 2 = third party spectator
 		boolean spectator = client.getVarbitValue(VarbitID.TFA_CLIENT_SPECTATE_MODE) >= 2;
-
-		boolean practice = false; // todo
 
 		if (room != null && currentState.getCurrentRoom() != room)
 		{
@@ -185,6 +194,7 @@ public class RaidStateTracker
 				debounceTicks = 0;
 				ocellusQuadrantDestructs = 0;
 				phase = PHASE_UNSTARTED;
+				practice = false;
 				setRaidState(DEFAULT_STATE, true);
 		}
 	}
@@ -218,6 +228,24 @@ public class RaidStateTracker
 		else if (e.getNpc().getId() == NpcID.TFA_OCELLUS_P3)
 		{
 			updatePhase(3);
+		}
+	}
+
+	@Subscribe
+	public void onItemContainerChanged(ItemContainerChanged e)
+	{
+		if (e.getContainerId() == InventoryID.INV && e.getItemContainer().contains(ItemID.TFA_GUTHIXIAN_ROOT))
+		{
+			markPractice();
+		}
+	}
+
+	@Subscribe
+	public void onItemSpawned(ItemSpawned e)
+	{
+		if (e.getItem().getId() == ItemID.TFA_GUTHIXIAN_ROOT)
+		{
+			markPractice();
 		}
 	}
 
@@ -294,5 +322,16 @@ public class RaidStateTracker
 				false
 			);
 		}
+	}
+
+	private void markPractice()
+	{
+		if (practice)
+		{
+			return;
+		}
+
+		practice = true;
+		setRaidState(currentState.withPractice(true), false);
 	}
 }
