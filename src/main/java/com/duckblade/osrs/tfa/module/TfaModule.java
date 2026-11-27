@@ -11,6 +11,7 @@ import com.duckblade.osrs.tfa.features.lobby.AmbientNoiseMuter;
 import com.duckblade.osrs.tfa.features.lobby.ClaimYourLoot;
 import com.duckblade.osrs.tfa.features.lobby.EmptyNamesRemover;
 import com.duckblade.osrs.tfa.features.lobby.LobbyOverheadTextMuter;
+import com.duckblade.osrs.tfa.features.lobby.ReorderAllianceLogTabs;
 import com.duckblade.osrs.tfa.features.lobby.SpellbookWarning;
 import com.duckblade.osrs.tfa.features.loot.DryStreakTracker;
 import com.duckblade.osrs.tfa.features.loot.LootChestHighlight;
@@ -81,6 +82,7 @@ public class TfaModule extends AbstractModule
 		RaidFolder raidFolder,
 		RaidStateTracker raidStateTracker,
 		RemoveMoiaWalkSceneryTiles removeMoiaWalkSceneryTiles,
+		ReorderAllianceLogTabs reorderAllianceLogTabs,
 		SpellbookWarning spellbookWarning,
 		SwordHealthBarRecolour swordHealthBarRecolour,
 		TimeTracker timeTracker,
@@ -118,6 +120,7 @@ public class TfaModule extends AbstractModule
 			raidFolder,
 			raidStateTracker,
 			removeMoiaWalkSceneryTiles,
+			reorderAllianceLogTabs,
 			spellbookWarning,
 			swordHealthBarRecolour,
 			timeTracker,
