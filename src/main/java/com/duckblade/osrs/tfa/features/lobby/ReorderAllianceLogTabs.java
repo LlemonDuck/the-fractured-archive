@@ -2,6 +2,7 @@ package com.duckblade.osrs.tfa.features.lobby;
 
 import com.duckblade.osrs.tfa.TfaConfig;
 import com.duckblade.osrs.tfa.module.PluginLifecycleComponent;
+import com.duckblade.osrs.tfa.util.RaidRoom;
 import com.duckblade.osrs.tfa.util.RaidState;
 import com.google.common.collect.ImmutableSet;
 import java.util.Set;
@@ -47,13 +48,14 @@ public class ReorderAllianceLogTabs
 	@Override
 	public boolean isEnabled(TfaConfig config, RaidState raidState)
 	{
-		return config.lobbyReorderAllianceLogTabs();
+		return (raidState.isInLobby() || raidState.getCurrentRoom() == RaidRoom.LOOT) &&
+			config.lobbyReorderAllianceLogTabs();
 	}
 
 	@Subscribe
 	public void onScriptPostFired(ScriptPostFired e)
 	{
-		if (!REBUILD_SCRIPTS.contains(e.getScriptId()))
+		if (!REBUILD_SCRIPTS.contains(e.getScriptId()) && e.getScriptId() != 10104)
 		{
 			return;
 		}
