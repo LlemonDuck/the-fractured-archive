@@ -466,6 +466,30 @@ public interface TfaConfig extends Config
 		return new Color(255, 255, 255, 64);
 	}
 
+	@ConfigItem(
+		keyName = "ocellusProceedIndicator",
+		name = "Proceed Indicator",
+		description = "Highlights players in red until they have clicked Proceed (requires RL Party).",
+		position = 5,
+		section = SECTION_OCELLUS
+	)
+	default boolean ocellusProceedIndicator()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "ocellusProceedIndicatorNonParty",
+		name = " ↳ Highlight Non-Party",
+		description = "Highlights non-party players in yellow.",
+		position = 6,
+		section = SECTION_OCELLUS
+	)
+	default boolean ocellusProceedIndicatorNonParty()
+	{
+		return false;
+	}
+
 	// Loot
 
 	@ConfigItem(

@@ -21,6 +21,7 @@ import com.duckblade.osrs.tfa.features.loot.LootLeftClickBankAll;
 import com.duckblade.osrs.tfa.features.moia.MoiaEnrageBarRecolour;
 import com.duckblade.osrs.tfa.features.moia.RemoveMoiaWalkSceneryTiles;
 import com.duckblade.osrs.tfa.features.ocellus.OcellusStartQuadrant;
+import com.duckblade.osrs.tfa.features.ocellus.ProceedIndicator;
 import com.duckblade.osrs.tfa.features.pointstracker.PartyDamageTracker;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsOverlay;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsTracker;
@@ -79,6 +80,7 @@ public class TfaModule extends AbstractModule
 		PartyDamageTracker partyDamageTracker,
 		PointsOverlay pointsOverlay,
 		PointsTracker pointsTracker,
+		ProceedIndicator proceedIndicator,
 		QuartermasterReminder quartermasterReminder,
 		QuickProceedSwaps quickProceedSwaps,
 		RaidCompletionTracker raidCompletionTracker,
@@ -119,6 +121,7 @@ public class TfaModule extends AbstractModule
 			partyDamageTracker,
 			pointsOverlay,
 			pointsTracker,
+			proceedIndicator,
 			quartermasterReminder,
 			quickProceedSwaps,
 			raidCompletionTracker,
