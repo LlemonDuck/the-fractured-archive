@@ -38,6 +38,7 @@ public class AutocastWarning
 	private static final String MESSAGE_UNKNOWN_AUTOCAST = "Unknown autocast!";
 
 	private final Client client;
+	private final StaffUtil staffUtil;
 	private final AutocastTracker autocastTracker;
 	private final RaidDoorTracker raidDoorTracker;
 	private final ObjectWarningRenderer objectWarningRenderer;
@@ -47,12 +48,14 @@ public class AutocastWarning
 	@Inject
 	public AutocastWarning(
 		Client client,
+		StaffUtil staffUtil,
 		AutocastTracker autocastTracker,
 		RaidDoorTracker raidDoorTracker,
 		ObjectWarningRenderer objectWarningRenderer
 	)
 	{
 		this.client = client;
+		this.staffUtil = staffUtil;
 		this.autocastTracker = autocastTracker;
 		this.raidDoorTracker = raidDoorTracker;
 		this.objectWarningRenderer = objectWarningRenderer;
@@ -104,7 +107,7 @@ public class AutocastWarning
 	private boolean hasWrongSpellSelected(Entryway entryway)
 	{
 		int spellbook = client.getVarbitValue(VarbitID.SPELLBOOK);
-		if (!StaffUtil.hasStaff(client, spellbook))
+		if (!staffUtil.hasStaff(client, spellbook))
 		{
 			return false;
 		}
