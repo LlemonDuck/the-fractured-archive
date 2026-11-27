@@ -38,6 +38,11 @@ public class PointsOverlay
 	@Override
 	public boolean isEnabled(TfaConfig config, RaidState raidState)
 	{
+		if (!raidState.isRaiding())
+		{
+			return false;
+		}
+
 		switch (config.pointsTrackerOverlayEnableMode())
 		{
 			case ALWAYS:
