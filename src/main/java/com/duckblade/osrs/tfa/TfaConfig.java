@@ -1,8 +1,10 @@
 package com.duckblade.osrs.tfa;
 
+import com.duckblade.osrs.tfa.features.hporbs.HpBarsLayout;
 import com.duckblade.osrs.tfa.features.hporbs.HpOrbMode;
 import com.duckblade.osrs.tfa.features.ocellus.OcellusCenser;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsTrackerOverlayEnableMode;
+import com.duckblade.osrs.tfa.features.projectiles.BossProjectiles;
 import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerFileMode;
 import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerOverlayMode;
 import com.duckblade.osrs.tfa.features.updatenotifier.UpdateNotifier;
@@ -110,6 +112,14 @@ public interface TfaConfig extends Config
 	)
 	String SECTION_TIME_TRACKER = "timeTracker";
 
+	@ConfigSection(
+		name = "Projectile Override",
+		description = "Replace boss projectiles with another boss's projectiles (visual only).",
+		position = 11,
+		closedByDefault = true
+	)
+	String SECTION_PROJECTILES = "sectionProjectiles";
+
 	// Miscellaneous
 
 	@ConfigItem(
@@ -137,10 +147,59 @@ public interface TfaConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "hpOrbOrderNumbers",
+		name = " ↳ Orb Order Numbers",
+		description = "Shows each party member's orb order number (1 = first orb) on their HP orb or health bar.",
+		position = 3,
+		section = SECTION_MISCELLANEOUS
+	)
+	default boolean hpOrbOrderNumbers()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "hpOrbHighlightSelf",
+		name = " ↳ Highlight Own Orb",
+		description = "Highlights your own HP orb or health bar.",
+		position = 4,
+		section = SECTION_MISCELLANEOUS
+	)
+	default boolean hpOrbHighlightSelf()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "hpOrbHighlightColour",
+		name = " ↳ Highlight Colour",
+		description = "Colour used to highlight your own HP orb or health bar.",
+		position = 5,
+		section = SECTION_MISCELLANEOUS
+	)
+	@Alpha
+	default Color hpOrbHighlightColour()
+	{
+		return new Color(0, 220, 255, 255);
+	}
+
+	@ConfigItem(
+		keyName = "hpBarsLayout",
+		name = " ↳ Health Bar Layout",
+		description = "When HP Orbs is set to Health Bars: one column lists everyone top to bottom in orb order.",
+		position = 6,
+		section = SECTION_MISCELLANEOUS
+	)
+	default HpBarsLayout hpBarsLayout()
+	{
+		return HpBarsLayout.ONE_COLUMN;
+	}
+
+	@ConfigItem(
 		keyName = "hideFadeTransition",
 		name = "Hide Fade Transition",
 		description = "Hides the fade transition between loading zones.",
-		position = 3,
+		position = 7,
 		section = SECTION_MISCELLANEOUS
 	)
 	default boolean hideFadeTransition()
@@ -152,7 +211,7 @@ public interface TfaConfig extends Config
 		keyName = "quickProceedEnable",
 		name = "Quick Proceed",
 		description = "Left click proceed on NPCs and quick-enter/quick-use entryways.",
-		position = 4,
+		position = 8,
 		section = SECTION_MISCELLANEOUS
 	)
 	default boolean quickProceedEnable()
@@ -827,4 +886,67 @@ public interface TfaConfig extends Config
 		hidden = true
 	)
 	void personalDryStreakCount(int count);
+
+	// Projectile Override
+
+	@ConfigItem(
+		keyName = "projectileOverrideBork",
+		name = "The Smorks (Bork)",
+		description = "Show the Smorks' magic and ranged projectiles in Bork's room as another boss's projectiles. Bork himself has no projectiles.",
+		position = 0,
+		section = SECTION_PROJECTILES
+	)
+	default BossProjectiles projectileOverrideBork()
+	{
+		return BossProjectiles.DEFAULT;
+	}
+
+	@ConfigItem(
+		keyName = "projectileOverrideDagonhai",
+		name = "Dagon'hai Elder",
+		description = "Show Dagon'hai Elder's magic and ranged projectiles as another boss's projectiles.",
+		position = 1,
+		section = SECTION_PROJECTILES
+	)
+	default BossProjectiles projectileOverrideDagonhai()
+	{
+		return BossProjectiles.DEFAULT;
+	}
+
+	@ConfigItem(
+		keyName = "projectileOverrideMoia",
+		name = "Moia",
+		description = "Show Moia's magic and ranged projectiles as another boss's projectiles.",
+		position = 2,
+		section = SECTION_PROJECTILES
+	)
+	default BossProjectiles projectileOverrideMoia()
+	{
+		return BossProjectiles.DEFAULT;
+	}
+
+	@ConfigItem(
+		keyName = "projectileOverrideOcellus",
+		name = "Ocellus",
+		description = "Show Ocellus's magic and ranged projectiles as another boss's projectiles.",
+		position = 3,
+		section = SECTION_PROJECTILES
+	)
+	default BossProjectiles projectileOverrideOcellus()
+	{
+		return BossProjectiles.DEFAULT;
+	}
+
+	@ConfigItem(
+		keyName = "projectileOverrideXarth",
+		name = "Xarth",
+		description = "Show Xarth's magic and ranged projectiles as another boss's projectiles.",
+		position = 4,
+		section = SECTION_PROJECTILES
+	)
+	default BossProjectiles projectileOverrideXarth()
+	{
+		return BossProjectiles.DEFAULT;
+	}
+
 }

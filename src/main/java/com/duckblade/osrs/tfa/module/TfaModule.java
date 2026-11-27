@@ -7,6 +7,7 @@ import com.duckblade.osrs.tfa.features.QuickProceedSwaps;
 import com.duckblade.osrs.tfa.features.autocast.AutocastWarning;
 import com.duckblade.osrs.tfa.features.ezekiel.SwordHealthBarRecolour;
 import com.duckblade.osrs.tfa.features.hporbs.HealthBarsOverlay;
+import com.duckblade.osrs.tfa.features.hporbs.OrbOrderOverlay;
 import com.duckblade.osrs.tfa.features.lobby.AmbientNoiseMuter;
 import com.duckblade.osrs.tfa.features.lobby.ClaimYourLoot;
 import com.duckblade.osrs.tfa.features.lobby.EmptyNamesRemover;
@@ -23,6 +24,7 @@ import com.duckblade.osrs.tfa.features.ocellus.OcellusStartQuadrant;
 import com.duckblade.osrs.tfa.features.pointstracker.PartyDamageTracker;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsOverlay;
 import com.duckblade.osrs.tfa.features.pointstracker.PointsTracker;
+import com.duckblade.osrs.tfa.features.projectiles.ProjectileOverride;
 import com.duckblade.osrs.tfa.features.resupply.BuyMenuSwapper;
 import com.duckblade.osrs.tfa.features.resupply.QuartermasterReminder;
 import com.duckblade.osrs.tfa.features.timetracking.TimeTracker;
@@ -74,9 +76,11 @@ public class TfaModule extends AbstractModule
 		MoiaEnrageBarRecolour moiaEnrageBarRecolour,
 		ObjectWarningRenderer objectWarningRenderer,
 		OcellusStartQuadrant ocellusStartQuadrant,
+		OrbOrderOverlay orbOrderOverlay,
 		PartyDamageTracker partyDamageTracker,
 		PointsOverlay pointsOverlay,
 		PointsTracker pointsTracker,
+		ProjectileOverride projectileOverride,
 		QuartermasterReminder quartermasterReminder,
 		QuickProceedSwaps quickProceedSwaps,
 		RaidCompletionTracker raidCompletionTracker,
@@ -113,9 +117,11 @@ public class TfaModule extends AbstractModule
 			moiaEnrageBarRecolour,
 			objectWarningRenderer,
 			ocellusStartQuadrant,
+			orbOrderOverlay,
 			partyDamageTracker,
 			pointsOverlay,
 			pointsTracker,
+			projectileOverride,
 			quartermasterReminder,
 			quickProceedSwaps,
 			raidCompletionTracker,

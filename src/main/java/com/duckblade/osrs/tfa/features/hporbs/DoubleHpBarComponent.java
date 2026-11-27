@@ -53,6 +53,11 @@ public class DoubleHpBarComponent implements LayoutableRenderableEntity
 	private Point preferredLocation = new Point();
 	private Dimension preferredSize = new Dimension(ComponentConstants.STANDARD_WIDTH, 16);
 	private int gap = 3;
+	// Draw only the first bar, using the full width
+	private boolean singleBar;
+	// Outline colour for each bar, or null for none
+	private Color highlight1;
+	private Color highlight2;
 
 	@Getter
 	private final Rectangle bounds = new Rectangle();
@@ -66,24 +71,26 @@ public class DoubleHpBarComponent implements LayoutableRenderableEntity
 		final int totalWidth = preferredSize.width;
 		final int totalHeight = Math.max(preferredSize.height, 16);
 
-		final int barWidth = (totalWidth - gap) / 2;
+		final int barWidth = singleBar ? totalWidth : (totalWidth - gap) / 2;
 
 		drawBar(
 			graphics,
 			centerLabel1,
 			value1,
+			highlight1,
 			baseX,
 			baseY,
 			barWidth,
 			totalHeight
 		);
 
-		if (!Strings.isNullOrEmpty(centerLabel2))
+		if (!singleBar && !Strings.isNullOrEmpty(centerLabel2))
 		{
 			drawBar(
 				graphics,
 				centerLabel2,
 				value2,
+				highlight2,
 				baseX + barWidth + gap,
 				baseY,
 				barWidth,
@@ -97,7 +104,7 @@ public class DoubleHpBarComponent implements LayoutableRenderableEntity
 		return dimension;
 	}
 
-	private void drawBar(Graphics2D graphics, String name, double value, int baseX, int baseY, int width, int height)
+	private void drawBar(Graphics2D graphics, String name, double value, Color highlight, int baseX, int baseY, int width, int height)
 	{
 		final FontMetrics metrics = graphics.getFontMetrics();
 		if (metrics.stringWidth(name) > width)
@@ -120,6 +127,13 @@ public class DoubleHpBarComponent implements LayoutableRenderableEntity
 			graphics.fillRect(baseX, baseY, width, height);
 			graphics.setColor(COLOUR_HEALTH);
 			graphics.fillRect(baseX, baseY, progressFill, height);
+		}
+
+		if (highlight != null)
+		{
+			graphics.setColor(highlight);
+			graphics.drawRect(baseX, baseY, width - 1, height - 1);
+			graphics.drawRect(baseX + 1, baseY + 1, width - 3, height - 3);
 		}
 
 		final TextComponent textComponent1 = new TextComponent();

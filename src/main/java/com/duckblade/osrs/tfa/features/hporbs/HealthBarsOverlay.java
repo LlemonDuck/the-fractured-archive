@@ -62,6 +62,10 @@ public class HealthBarsOverlay
 	private final Client client;
 
 	private HpOrbMode mode;
+	private boolean showNumbers;
+	private boolean highlightSelf;
+	private Color highlightColour;
+	private HpBarsLayout layout;
 
 	@Inject
 	public HealthBarsOverlay(Client client)
@@ -79,6 +83,10 @@ public class HealthBarsOverlay
 	public boolean isEnabled(TfaConfig config, RaidState raidState)
 	{
 		mode = config.hpOrbsMode();
+		showNumbers = config.hpOrbOrderNumbers();
+		highlightSelf = config.hpOrbHighlightSelf();
+		highlightColour = config.hpOrbHighlightColour();
+		layout = config.hpBarsLayout();
 		return raidState.isInRaid() && mode != HpOrbMode.ORBS;
 	}
 
@@ -128,6 +136,7 @@ public class HealthBarsOverlay
 			return super.render(graphics);
 		}
 
+		int mySlot = highlightSelf ? PartyOrder.localSlot(client) : -1;
 		DoubleHpBarComponent current = new DoubleHpBarComponent();
 		for (int i = 0; i < 8; i++)
 		{
@@ -145,16 +154,31 @@ public class HealthBarsOverlay
 				continue;
 			}
 
-			if (i % 2 == 0)
+			String label = showNumbers ? (i + 1) + ". " + playerName : playerName;
+			Color highlight = i == mySlot ? highlightColour : null;
+
+			if (layout == HpBarsLayout.ONE_COLUMN)
 			{
-				current.setCenterLabel1(playerName);
+				// One bar per row, top to bottom in orb order
+				DoubleHpBarComponent row = new DoubleHpBarComponent();
+				row.setSingleBar(true);
+				row.setCenterLabel1(label);
+				row.setValue1(hpFactor);
+				row.setHighlight1(highlight);
+				panelComponent.getChildren().add(row);
+			}
+			else if (i % 2 == 0)
+			{
+				current.setCenterLabel1(label);
 				current.setValue1(hpFactor);
+				current.setHighlight1(highlight);
 				panelComponent.getChildren().add(current);
 			}
 			else
 			{
-				current.setCenterLabel2(playerName);
+				current.setCenterLabel2(label);
 				current.setValue2(hpFactor);
+				current.setHighlight2(highlight);
 				current = new DoubleHpBarComponent();
 			}
 		}
