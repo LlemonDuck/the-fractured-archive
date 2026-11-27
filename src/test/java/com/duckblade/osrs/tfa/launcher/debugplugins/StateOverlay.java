@@ -1,6 +1,7 @@
 package com.duckblade.osrs.tfa.launcher.debugplugins;
 
 import com.duckblade.osrs.tfa.util.RaidCompletionTracker;
+import com.duckblade.osrs.tfa.util.RaidState;
 import com.duckblade.osrs.tfa.util.RaidStateTracker;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -20,8 +21,8 @@ public class StateOverlay extends OverlayPanel
 
 	public enum StateDisplays
 	{
-		PATH_LEVELS,
 		RAID_STATE,
+		RAID_MEMBERS,
 		ROOM_COMPLETIONS,
 	}
 
@@ -40,32 +41,45 @@ public class StateOverlay extends OverlayPanel
 
 		if (config.stateOverlay().contains(StateDisplays.RAID_STATE))
 		{
+			RaidState state = raidStateTracker.getCurrentState();
 			getPanelComponent().getChildren().addAll(
 				List.of(
 					TitleComponent.builder()
 						.color(Color.ORANGE)
 						.text("Raid State")
 						.build(),
-					LineComponent.builder()
-						.left("In Raid")
-						.rightColor(raidStateTracker.getCurrentState().isInRaid() ? Color.GREEN : Color.RED)
-						.right(String.valueOf(raidStateTracker.getCurrentState().isInRaid()))
-						.build(),
-					LineComponent.builder()
-						.left("In Lobby")
-						.rightColor(raidStateTracker.getCurrentState().isInLobby() ? Color.GREEN : Color.RED)
-						.right(String.valueOf(raidStateTracker.getCurrentState().isInLobby()))
-						.build(),
+					booleanLine("In Raid", state.isInRaid()),
+					booleanLine("In Lobby", state.isInLobby()),
+					booleanLine("Spectator", state.isSpectator()),
+					booleanLine("Practice", state.isPractice()),
 					LineComponent.builder()
 						.left("Room")
-						.right(String.valueOf(raidStateTracker.getCurrentState().getCurrentRoom()))
+						.right((state.getCurrentRoom() == null ? "-" : state.getCurrentRoom().getShortName()) + "." + state.getPhase())
 						.build(),
 					LineComponent.builder()
 						.left("Players")
-						.right(String.valueOf(raidStateTracker.getCurrentState().getPlayerCount()))
+						.right(String.valueOf(state.getPlayerCount()))
 						.build()
 				)
 			);
+		}
+
+		if (config.stateOverlay().contains(StateDisplays.RAID_MEMBERS))
+		{
+			getPanelComponent().getChildren().add(
+				TitleComponent.builder()
+					.color(Color.ORANGE)
+					.text("Raid Members")
+					.build()
+			);
+			for (String member : raidStateTracker.getRaidMemberNames())
+			{
+				getPanelComponent().getChildren().add(
+					LineComponent.builder()
+						.right(member)
+						.build()
+				);
+			}
 		}
 
 		if (config.stateOverlay().contains(StateDisplays.ROOM_COMPLETIONS))
@@ -87,5 +101,14 @@ public class StateOverlay extends OverlayPanel
 		}
 
 		return super.render(graphics);
+	}
+
+	private static LineComponent booleanLine(String label, boolean value)
+	{
+		return LineComponent.builder()
+			.left(label)
+			.rightColor(value ? Color.GREEN : Color.RED)
+			.right(String.valueOf(value))
+			.build();
 	}
 }
