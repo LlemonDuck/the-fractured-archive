@@ -2,17 +2,16 @@ package com.duckblade.osrs.tfa.features.lobby;
 
 import com.duckblade.osrs.tfa.TfaConfig;
 import com.duckblade.osrs.tfa.module.PluginLifecycleComponent;
+import com.duckblade.osrs.tfa.util.ObjectWarningRenderer;
 import com.duckblade.osrs.tfa.util.RaidState;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Shape;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
-import net.runelite.api.Point;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.gameval.ObjectID;
 import net.runelite.api.gameval.VarbitID;
@@ -20,7 +19,6 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayUtil;
 
 @Slf4j
 @Singleton
@@ -33,15 +31,18 @@ public class ClaimYourLoot
 	private static final Color OVERLAY_COLOR = new Color(225, 163, 12);
 
 	private final Client client;
+	private final ObjectWarningRenderer objectWarningRenderer;
 
 	private GameObject lootWheelbarrow;
 
 	@Inject
 	public ClaimYourLoot(
-		Client client
+		Client client,
+		ObjectWarningRenderer objectWarningRenderer
 	)
 	{
 		this.client = client;
+		this.objectWarningRenderer = objectWarningRenderer;
 
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
@@ -69,17 +70,7 @@ public class ClaimYourLoot
 
 		if (lootWheelbarrow != null)
 		{
-			Shape hull = lootWheelbarrow.getConvexHull();
-			if (hull != null)
-			{
-				OverlayUtil.renderPolygon(graphics, hull, OVERLAY_COLOR);
-			}
-
-			Point textPoint = lootWheelbarrow.getCanvasTextLocation(graphics, WARNING_TEXT, 0);
-			if (textPoint != null)
-			{
-				OverlayUtil.renderTextLocation(graphics, textPoint, WARNING_TEXT, OVERLAY_COLOR);
-			}
+			objectWarningRenderer.drawWarning(graphics, lootWheelbarrow, OVERLAY_COLOR, WARNING_TEXT);
 		}
 		return null;
 	}

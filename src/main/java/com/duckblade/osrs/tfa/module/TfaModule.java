@@ -32,6 +32,7 @@ import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerInfoBoxes;
 import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerOverlay;
 import com.duckblade.osrs.tfa.features.updatenotifier.UpdateNotifier;
 import com.duckblade.osrs.tfa.util.AutocastTracker;
+import com.duckblade.osrs.tfa.util.ObjectWarningRenderer;
 import com.duckblade.osrs.tfa.util.RaidCompletionTracker;
 import com.duckblade.osrs.tfa.util.RaidDoorTracker;
 import com.duckblade.osrs.tfa.util.RaidFolder;
@@ -71,6 +72,7 @@ public class TfaModule extends AbstractModule
 		LootFlameRecolour lootFlameRecolour,
 		LootLeftClickBankAll lootLeftClickBankAll,
 		MoiaEnrageBarRecolour moiaEnrageBarRecolour,
+		ObjectWarningRenderer objectWarningRenderer,
 		OcellusStartQuadrant ocellusStartQuadrant,
 		PartyDamageTracker partyDamageTracker,
 		PointsOverlay pointsOverlay,
@@ -109,6 +111,7 @@ public class TfaModule extends AbstractModule
 			lootFlameRecolour,
 			lootLeftClickBankAll,
 			moiaEnrageBarRecolour,
+			objectWarningRenderer,
 			ocellusStartQuadrant,
 			partyDamageTracker,
 			pointsOverlay,
