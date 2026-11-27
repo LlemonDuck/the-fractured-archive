@@ -2,6 +2,7 @@ package com.duckblade.osrs.tfa.features.resupply;
 
 import com.duckblade.osrs.tfa.TfaConfig;
 import com.duckblade.osrs.tfa.module.PluginLifecycleComponent;
+import com.duckblade.osrs.tfa.util.ObjectWarningRenderer;
 import com.duckblade.osrs.tfa.util.RaidDoor;
 import com.duckblade.osrs.tfa.util.RaidDoorTracker;
 import com.duckblade.osrs.tfa.util.RaidRoom;
@@ -15,19 +16,15 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import net.runelite.api.GameObject;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.Point;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.NpcID;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayUtil;
-import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 
 @Singleton
 public class QuartermasterReminder
@@ -40,13 +37,10 @@ public class QuartermasterReminder
 	private static final Set<String> ENTER_OPTIONS = ImmutableSet.of("Enter", "Quick-Enter");
 
 	private static final Color WARNING_COLOUR = Color.RED;
-	private static final int OUTLINE_WIDTH = 3;
-	private static final int OUTLINE_FEATHER = 4;
-	private static final int TEXT_Z_OFFSET = 256;
 	private static final String MESSAGE = "Visit the Quartermaster!";
 
 	private final RaidDoorTracker raidDoorTracker;
-	private final ModelOutlineRenderer modelOutlineRenderer;
+	private final ObjectWarningRenderer objectWarningRenderer;
 
 	private volatile boolean quartermasterPresent;
 	private volatile boolean visitedQuartermaster;
@@ -54,10 +48,10 @@ public class QuartermasterReminder
 	private volatile boolean warningOverlay;
 
 	@Inject
-	public QuartermasterReminder(RaidDoorTracker raidDoorTracker, ModelOutlineRenderer modelOutlineRenderer)
+	public QuartermasterReminder(RaidDoorTracker raidDoorTracker, ObjectWarningRenderer objectWarningRenderer)
 	{
 		this.raidDoorTracker = raidDoorTracker;
-		this.modelOutlineRenderer = modelOutlineRenderer;
+		this.objectWarningRenderer = objectWarningRenderer;
 
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
@@ -89,7 +83,6 @@ public class QuartermasterReminder
 			return null;
 		}
 
-		graphics.setFont(FontManager.getRunescapeBoldFont());
 		for (RaidDoor door : DOORS)
 		{
 			GameObject object = raidDoorTracker.getDoor(door);
@@ -98,13 +91,7 @@ public class QuartermasterReminder
 				continue;
 			}
 
-			modelOutlineRenderer.drawOutline(object, OUTLINE_WIDTH, WARNING_COLOUR, OUTLINE_FEATHER);
-
-			Point textPoint = object.getCanvasTextLocation(graphics, MESSAGE, TEXT_Z_OFFSET);
-			if (textPoint != null)
-			{
-				OverlayUtil.renderTextLocation(graphics, textPoint, MESSAGE, WARNING_COLOUR);
-			}
+			objectWarningRenderer.drawWarning(graphics, object, WARNING_COLOUR, MESSAGE);
 		}
 
 		return null;

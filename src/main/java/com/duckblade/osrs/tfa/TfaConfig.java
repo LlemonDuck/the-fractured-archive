@@ -293,6 +293,18 @@ public interface TfaConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+		keyName = "lobbyReorderAllianceLogTabs",
+		name = "Reorder Alliance Log Tabs",
+		description = "Reorders the lobby's alliance records to match the in-raid room order.",
+		section = SECTION_LOBBY,
+		position = 6
+	)
+	default boolean lobbyReorderAllianceLogTabs()
+	{
+		return false;
+	}
+
 	// Ezekiel
 
 	@ConfigItem(

@@ -12,6 +12,7 @@ import com.duckblade.osrs.tfa.features.lobby.AmbientNoiseMuter;
 import com.duckblade.osrs.tfa.features.lobby.ClaimYourLoot;
 import com.duckblade.osrs.tfa.features.lobby.EmptyNamesRemover;
 import com.duckblade.osrs.tfa.features.lobby.LobbyOverheadTextMuter;
+import com.duckblade.osrs.tfa.features.lobby.ReorderAllianceLogTabs;
 import com.duckblade.osrs.tfa.features.lobby.SpellbookWarning;
 import com.duckblade.osrs.tfa.features.loot.DryStreakTracker;
 import com.duckblade.osrs.tfa.features.loot.LootChestHighlight;
@@ -33,6 +34,7 @@ import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerInfoBoxes;
 import com.duckblade.osrs.tfa.features.timetracking.TimeTrackerOverlay;
 import com.duckblade.osrs.tfa.features.updatenotifier.UpdateNotifier;
 import com.duckblade.osrs.tfa.util.AutocastTracker;
+import com.duckblade.osrs.tfa.util.ObjectWarningRenderer;
 import com.duckblade.osrs.tfa.util.RaidCompletionTracker;
 import com.duckblade.osrs.tfa.util.RaidDoorTracker;
 import com.duckblade.osrs.tfa.util.RaidFolder;
@@ -72,6 +74,7 @@ public class TfaModule extends AbstractModule
 		LootFlameRecolour lootFlameRecolour,
 		LootLeftClickBankAll lootLeftClickBankAll,
 		MoiaEnrageBarRecolour moiaEnrageBarRecolour,
+		ObjectWarningRenderer objectWarningRenderer,
 		OcellusStartQuadrant ocellusStartQuadrant,
 		OrbOrderOverlay orbOrderOverlay,
 		PartyDamageTracker partyDamageTracker,
@@ -85,6 +88,7 @@ public class TfaModule extends AbstractModule
 		RaidFolder raidFolder,
 		RaidStateTracker raidStateTracker,
 		RemoveMoiaWalkSceneryTiles removeMoiaWalkSceneryTiles,
+		ReorderAllianceLogTabs reorderAllianceLogTabs,
 		SpellbookWarning spellbookWarning,
 		SwordHealthBarRecolour swordHealthBarRecolour,
 		TimeTracker timeTracker,
@@ -111,6 +115,7 @@ public class TfaModule extends AbstractModule
 			lootFlameRecolour,
 			lootLeftClickBankAll,
 			moiaEnrageBarRecolour,
+			objectWarningRenderer,
 			ocellusStartQuadrant,
 			orbOrderOverlay,
 			partyDamageTracker,
@@ -124,6 +129,7 @@ public class TfaModule extends AbstractModule
 			raidFolder,
 			raidStateTracker,
 			removeMoiaWalkSceneryTiles,
+			reorderAllianceLogTabs,
 			spellbookWarning,
 			swordHealthBarRecolour,
 			timeTracker,

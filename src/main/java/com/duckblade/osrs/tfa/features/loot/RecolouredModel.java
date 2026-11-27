@@ -2,7 +2,6 @@ package com.duckblade.osrs.tfa.features.loot;
 
 import java.util.Arrays;
 import lombok.Getter;
-import net.runelite.api.Constants;
 import net.runelite.api.JagexColor;
 import net.runelite.api.Model;
 
@@ -14,7 +13,7 @@ public final class RecolouredModel
 {
 
 	// 1.0s
-	public static final int FADE_CLIENT_TICKS = 50 * Constants.CLIENT_TICK_LENGTH;
+	public static final int FADE_CLIENT_TICKS = 50;
 
 	private final int faceCount;
 

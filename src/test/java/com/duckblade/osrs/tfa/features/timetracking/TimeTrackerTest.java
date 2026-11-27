@@ -72,6 +72,16 @@ class TimeTrackerTest
 	}
 
 	@Test
+	void recordsDagonhaiSplitFromInGameRoomName()
+	{
+		chat("Challenge started: The Dagon'hai.");
+		assertEquals(RaidRoom.DAGONHAI, tracker.getInProgress().getRoom());
+		complete("The Dagon'hai", "2:00.00", "5:00.00");
+
+		assertEquals(new Split(RaidRoom.DAGONHAI, 200, 500), tracker.getSplits().get(0));
+	}
+
+	@Test
 	void liveTimesExtrapolateFromServerTimes()
 	{
 		chat("Challenge started: Archive Guardian.");
