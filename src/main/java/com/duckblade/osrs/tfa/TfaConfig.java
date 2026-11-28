@@ -665,6 +665,34 @@ public interface TfaConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+		keyName = "lootChestAudioEnabled",
+		name = "Purple Chest Audio",
+		description = "Plays an audio file when the purple chest is opened." +
+			"<br/>The custom audio file must be named tfa-chest.wav inside the .runelite/plugin-data/the-fractured-archive folder.",
+		position = 15,
+		section = SECTION_LOOT
+	)
+	default boolean lootChestAudioEnabled()
+	{
+		return false;
+	}
+
+	String LOOT_CHEST_AUDIO_VOLUME_KEY = "lootChestAudioVolume";
+
+	@ConfigItem(
+		keyName = LOOT_CHEST_AUDIO_VOLUME_KEY,
+		name = " ↳ Volume",
+		description = "Adjusts how loud the chest audio is when played. 100 is no change to the file's volume.",
+		position = 16,
+		section = SECTION_LOOT
+	)
+	@Range(max = 200)
+	default int lootChestAudioVolume()
+	{
+		return 100;
+	}
+
 	// points tracker
 
 	@ConfigItem(

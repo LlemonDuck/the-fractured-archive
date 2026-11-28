@@ -15,6 +15,7 @@ import com.duckblade.osrs.tfa.features.lobby.ReorderAllianceLogTabs;
 import com.duckblade.osrs.tfa.features.lobby.SpellbookWarning;
 import com.duckblade.osrs.tfa.features.loot.DryStreakChatCommand;
 import com.duckblade.osrs.tfa.features.loot.DryStreakTracker;
+import com.duckblade.osrs.tfa.features.loot.LootChestAudio;
 import com.duckblade.osrs.tfa.features.loot.LootChestHighlight;
 import com.duckblade.osrs.tfa.features.loot.LootFlameRecolour;
 import com.duckblade.osrs.tfa.features.loot.LootLeftClickBankAll;
@@ -71,6 +72,7 @@ public class TfaModule extends AbstractModule
 		HealthBarsOverlay healthBarsOverlay,
 		LobbyBoardHighlighter lobbyBoardHighlighter,
 		LobbyOverheadTextMuter lobbyOverheadTextMuter,
+		LootChestAudio lootChestAudio,
 		LootChestHighlight lootChestHighlight,
 		LootFlameRecolour lootFlameRecolour,
 		LootLeftClickBankAll lootLeftClickBankAll,
@@ -112,6 +114,7 @@ public class TfaModule extends AbstractModule
 			healthBarsOverlay,
 			lobbyBoardHighlighter,
 			lobbyOverheadTextMuter,
+			lootChestAudio,
 			lootChestHighlight,
 			lootFlameRecolour,
 			lootLeftClickBankAll,
